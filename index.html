@@ -1,0 +1,2368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meeting Efficiency Score — Worklytics</title>
+  <meta name="description" content="Get your personalized Meeting Efficiency Score and see how you compare to thousands of professionals. Powered by Worklytics benchmark data.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:       #3960f0;
+      --blue-mid:   #2244cc;
+      --blue-dark:  #1e3a8a;
+      --blue-light: #eff4ff;
+      --blue-pale:  #f5f7ff;
+      --green:      #10b981;
+      --amber:      #f59e0b;
+      --orange:     #f97316;
+      --red:        #ef4444;
+      --gray-50:    #f8fafc;
+      --gray-100:   #f1f5f9;
+      --gray-200:   #e2e8f0;
+      --gray-300:   #cbd5e1;
+      --gray-400:   #94a3b8;
+      --gray-500:   #64748b;
+      --gray-600:   #475569;
+      --gray-700:   #374151;
+      --gray-900:   #1a202c;
+      --bg:         #f0f4f8;
+      --shadow:     0 4px 24px rgba(0,0,0,0.09);
+      --shadow-sm:  0 2px 8px rgba(0,0,0,0.07);
+      --radius:     16px;
+      --radius-sm:  10px;
+      --radius-pill:20px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--gray-900);
+      min-height: 100vh;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Screens ── */
+    .screen { display: none !important; }
+    .screen.active { display: block !important; }
+    #s-landing.active { display: flex !important; }
+
+    /* ── Shared logo ── */
+    .wl-logo { height: 22px; width: auto; cursor: pointer; display: block; }
+
+    /* ════════════════════════════════════════
+       LANDING
+    ════════════════════════════════════════ */
+    #s-landing { min-height: 100vh; display: flex; flex-direction: column; }
+
+    .land-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 48px;
+      background: #fff;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .land-nav a {
+      font-size: 13px;
+      color: var(--gray-500);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .land-nav a:hover { color: var(--blue); }
+
+    .land-hero {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 72px 24px 56px;
+      background: linear-gradient(180deg, #fff 0%, var(--bg) 100%);
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--blue-light);
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 20px;
+      margin-bottom: 28px;
+    }
+
+    .hero-h1 {
+      font-size: clamp(30px, 5.5vw, 54px);
+      font-weight: 800;
+      color: var(--gray-900);
+      line-height: 1.1;
+      max-width: 680px;
+      margin-bottom: 20px;
+      letter-spacing: -0.025em;
+    }
+    .hero-h1 em { font-style: normal; color: var(--blue); }
+
+    .hero-sub {
+      font-size: 17px;
+      color: var(--gray-500);
+      max-width: 500px;
+      line-height: 1.65;
+      margin-bottom: 36px;
+    }
+
+    .btn-hero {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--blue);
+      color: #fff;
+      padding: 16px 36px;
+      border-radius: var(--radius-sm);
+      font-size: 16px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+      box-shadow: 0 4px 16px rgba(57,96,240,0.35);
+      letter-spacing: 0.01em;
+    }
+    .btn-hero:hover  { background: var(--blue-mid); box-shadow: 0 6px 20px rgba(57,96,240,0.4); }
+    .btn-hero:active { transform: scale(0.98); }
+
+    .hero-note {
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--gray-400);
+    }
+
+    .stats-section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gray-400);
+      margin-top: 40px;
+      margin-bottom: 12px;
+    }
+
+    /* Stats row */
+    .stats-row {
+      display: flex;
+      gap: 1px;
+      max-width: 840px;
+      width: 100%;
+      margin: 56px auto 0;
+      background: var(--gray-200);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .stat-cell {
+      flex: 1;
+      background: #fff;
+      padding: 24px 20px;
+      text-align: center;
+    }
+    .stat-cell:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+    .stat-cell:last-child  { border-radius: 0 var(--radius) var(--radius) 0; }
+    .stat-big { font-size: 30px; font-weight: 800; color: var(--blue); line-height: 1; margin-bottom: 6px; }
+    .stat-lbl { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--gray-400); }
+
+    /* How it works */
+    .how-section {
+      max-width: 840px;
+      width: 100%;
+      margin: 64px auto 0;
+      padding: 0 24px;
+    }
+    .how-eyebrow {
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gray-400);
+      margin-bottom: 32px;
+    }
+    .how-steps { display: flex; gap: 0; justify-content: center; }
+    .how-step {
+      flex: 1;
+      max-width: 240px;
+      text-align: center;
+      padding: 0 20px;
+      position: relative;
+    }
+    .how-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 24px;
+      right: -1px;
+      width: 1px;
+      height: 32px;
+      background: var(--gray-200);
+    }
+    .how-icon {
+      width: 48px; height: 48px;
+      background: var(--blue-light);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin: 0 auto 14px;
+    }
+    .how-step h3 { font-size: 14px; font-weight: 700; color: var(--gray-900); margin-bottom: 6px; }
+    .how-step p  { font-size: 13px; color: var(--gray-500); line-height: 1.55; }
+
+    .land-footer {
+      text-align: center;
+      padding: 40px 24px 32px;
+      font-size: 12px;
+      color: var(--gray-400);
+      line-height: 1.6;
+    }
+
+    /* ════════════════════════════════════════
+       FORM
+    ════════════════════════════════════════ */
+    #s-form {
+      min-height: 100vh;
+      padding: 28px 16px 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .form-topbar {
+      width: 100%;
+      max-width: 560px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .form-topbar button {
+      font-size: 12px;
+      color: var(--gray-400);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px 0;
+    }
+    .form-topbar button:hover { color: var(--gray-600); }
+
+    /* Team join banner */
+    .team-banner {
+      background: var(--blue-light);
+      border: 1.5px solid #c7d7fe;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      display: none;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--blue-dark);
+      line-height: 1.5;
+    }
+    .team-banner.show { display: flex; }
+    .tb-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+
+    /* Card */
+    .card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      width: 100%;
+      max-width: 560px;
+      padding: 36px 40px 40px;
+    }
+
+    /* Progress dots */
+    .prog-wrap { margin-bottom: 28px; }
+    .prog-track {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .prog-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--gray-200);
+      flex-shrink: 0;
+      transition: background 0.25s, box-shadow 0.25s;
+    }
+    .prog-dot.active { background: var(--blue); box-shadow: 0 0 0 3px rgba(57,96,240,0.18); }
+    .prog-dot.done   { background: var(--blue); }
+    .prog-line {
+      flex: 1; height: 2px;
+      background: var(--gray-200);
+      border-radius: 1px;
+      transition: background 0.25s;
+    }
+    .prog-line.done { background: var(--blue); }
+    .prog-meta { font-size: 12px; color: var(--gray-400); font-weight: 600; }
+
+    /* Section label */
+    .sec-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--gray-400);
+      margin: 22px 0 12px;
+    }
+    .sec-label:first-of-type { margin-top: 4px; }
+
+    /* Field */
+    .field { margin-bottom: 16px; }
+    .field:last-child { margin-bottom: 0; }
+    .field > label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: 6px;
+    }
+    .field input[type="text"],
+    .field input[type="email"],
+    .field input[type="number"],
+    .field select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      color: var(--gray-900);
+      background: var(--gray-50);
+      outline: none;
+      appearance: none;
+      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+    .field input:focus, .field select:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(57,96,240,0.12);
+      background: #fff;
+    }
+    .field select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-color: var(--gray-50);
+      padding-right: 34px;
+      cursor: pointer;
+    }
+    .field-row { display: flex; gap: 14px; }
+    .field-row .field { flex: 1; }
+
+    /* Pill group */
+    .pill-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pill-group input[type="radio"] { display: none; }
+    .pill-group label {
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
+      border: 1.5px solid var(--gray-200);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray-500);
+      cursor: pointer;
+      background: var(--gray-50);
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+      user-select: none;
+      line-height: 1;
+    }
+    .pill-group input:checked + label {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff;
+      font-weight: 600;
+    }
+    .pill-group label:hover { border-color: var(--blue); color: var(--blue); }
+    .pill-group input:checked + label:hover { color: #fff; }
+
+    /* Slider */
+    .slider-wrap { display: flex; align-items: center; gap: 14px; }
+    .slider-wrap input[type="range"] {
+      flex: 1;
+      height: 6px;
+      border-radius: 3px;
+      accent-color: var(--blue);
+      cursor: pointer;
+    }
+    .slider-val {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--blue);
+      min-width: 56px;
+      text-align: right;
+      line-height: 1;
+    }
+    .field-hint {
+      font-size: 11px;
+      color: var(--gray-400);
+      margin-top: 5px;
+      line-height: 1.4;
+    }
+
+    /* Cost input with $ prefix */
+    .cost-wrap { position: relative; }
+    .cost-wrap .cost-pfx {
+      position: absolute;
+      left: 12px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gray-500);
+      pointer-events: none;
+    }
+    .cost-wrap input { padding-left: 22px; }
+
+    /* Divider */
+    .divider { border: none; border-top: 1px solid var(--gray-100); margin: 18px 0; }
+
+    /* Buttons */
+    .btn { display: block; width: 100%; padding: 14px; border: none; border-radius: var(--radius-sm);
+           font-size: 15px; font-weight: 700; cursor: pointer; transition: background 0.15s, transform 0.1s;
+           letter-spacing: 0.01em; text-align: center; }
+    .btn:active { transform: scale(0.98); }
+    .btn-blue  { background: var(--blue);   color: #fff; margin-top: 28px; }
+    .btn-blue:hover { background: var(--blue-mid); }
+    .btn-ghost { background: transparent; color: var(--gray-500); border: 1.5px solid var(--gray-200); margin-top: 10px; }
+    .btn-ghost:hover { border-color: var(--gray-300); color: var(--gray-700); }
+
+    /* ════════════════════════════════════════
+       RESULTS
+    ════════════════════════════════════════ */
+    #s-results {
+      padding: 24px 16px 64px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .res-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+    .res-topbar button {
+      font-size: 13px; color: var(--gray-400);
+      background: none; border: none; cursor: pointer;
+    }
+    .res-topbar button:hover { color: var(--gray-600); }
+
+    /* Score hero */
+    .score-hero {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 36px 40px;
+      display: flex;
+      align-items: center;
+      gap: 48px;
+      margin-bottom: 16px;
+    }
+
+    .gauge-wrap {
+      position: relative;
+      width: 180px;
+      height: 180px;
+      flex-shrink: 0;
+    }
+    .gauge-svg { width: 180px; height: 180px; display: block; }
+    .gauge-center {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      pointer-events: none;
+    }
+    .gauge-num {
+      font-size: 52px;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--gray-900);
+      letter-spacing: -0.02em;
+    }
+    .gauge-sub {
+      font-size: 11px;
+      color: var(--gray-400);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .score-right { flex: 1; min-width: 0; }
+    .score-grade {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .score-headline {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--gray-900);
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+    .score-summary {
+      font-size: 14px;
+      color: var(--gray-500);
+      line-height: 1.65;
+    }
+
+    /* Metrics strip */
+    /* ── Animal archetype card ── */
+    .animal-card {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: linear-gradient(135deg, #f0f4ff 0%, #fafafa 100%);
+      border: 1.5px solid var(--blue-light);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+    .animal-img {
+      width: 88px;
+      height: 88px;
+      object-fit: contain;
+      flex-shrink: 0;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.12));
+    }
+    .animal-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 4px;
+    }
+    .animal-name {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--gray-900);
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+    .animal-desc {
+      font-size: 14px;
+      color: var(--gray-600);
+      line-height: 1.5;
+    }
+    @media (max-width: 480px) {
+      .animal-card { flex-direction: column; text-align: center; }
+    }
+
+    .metrics-strip {
+      display: flex;
+      gap: 1px;
+      background: var(--gray-200);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 16px;
+    }
+    .m-cell {
+      flex: 1;
+      background: #fff;
+      padding: 18px 14px;
+      text-align: center;
+    }
+    .m-cell:first-child { border-radius: 12px 0 0 12px; }
+    .m-cell:last-child  { border-radius: 0 12px 12px 0; }
+    .m-val {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--gray-900);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .m-val.good   { color: var(--green); }
+    .m-val.warn   { color: var(--amber); }
+    .m-val.danger { color: var(--red); }
+    .m-val.blue   { color: var(--blue); }
+    .m-lbl {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--gray-400);
+      line-height: 1.3;
+    }
+
+    /* Two col grid */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    /* Generic result card */
+    .r-card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      padding: 24px;
+    }
+    .r-card-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--gray-400);
+      margin-bottom: 16px;
+    }
+
+    /* Benchmark chart */
+    #bench-canvas { width: 100%; height: 148px; display: block; }
+    .chart-footer {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--gray-400);
+    }
+    .chart-footer strong { color: var(--gray-600); }
+
+    /* Dimension bars */
+    .dim-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 13px;
+    }
+    .dim-row:last-child { margin-bottom: 0; }
+    .dim-icon { font-size: 15px; width: 20px; flex-shrink: 0; }
+    .dim-name { font-size: 12px; font-weight: 600; color: var(--gray-600); width: 88px; flex-shrink: 0; }
+    .dim-track { flex: 1; height: 7px; background: var(--gray-100); border-radius: 4px; overflow: hidden; }
+    .dim-bar   { height: 100%; border-radius: 4px; transition: width 0.9s cubic-bezier(0.4,0,0.2,1); }
+    .dim-score { font-size: 13px; font-weight: 700; width: 28px; text-align: right; flex-shrink: 0; }
+    .dim-weight { font-size: 10px; color: var(--gray-400); width: 30px; flex-shrink: 0; text-align: right; }
+
+    /* Insights card */
+    .timeline-card {
+      margin-bottom: 16px;
+    }
+    .timeline-card .r-card-title {
+      margin-bottom: 12px;
+    }
+    .insights-card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .insight-row {
+      display: flex;
+      gap: 14px;
+      padding: 15px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .insight-row:first-child { padding-top: 0; }
+    .insight-row:last-child  { border-bottom: none; padding-bottom: 0; }
+    .ins-icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; flex-shrink: 0;
+    }
+    .ins-icon.red    { background: #fff1f2; }
+    .ins-icon.amber  { background: #fffbeb; }
+    .ins-icon.green  { background: #f0fdf4; }
+    .ins-icon.blue   { background: var(--blue-light); }
+    .ins-body h4 { font-size: 14px; font-weight: 700; color: var(--gray-900); margin-bottom: 4px; }
+    .ins-body p  { font-size: 13px; color: var(--gray-500); line-height: 1.6; }
+
+    /* Team invite */
+    .invite-card {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3960f0 100%);
+      border-radius: var(--radius);
+      padding: 30px 32px;
+      margin-bottom: 16px;
+      color: #fff;
+    }
+    .invite-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 16px;
+    }
+    .invite-top h3 { font-size: 19px; font-weight: 800; margin-bottom: 6px; }
+    .invite-top p  { font-size: 13px; color: #bfdbfe; line-height: 1.55; }
+    .btn-share {
+      flex-shrink: 0;
+      background: #fff;
+      color: var(--blue);
+      padding: 11px 22px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .btn-share:hover { background: #eff4ff; }
+    .share-box {
+      display: none;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .share-box.show { display: flex; }
+    .share-input {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1.5px solid rgba(255,255,255,0.3);
+      font-size: 12px;
+      color: #fff;
+      background: rgba(255,255,255,0.12);
+      outline: none;
+    }
+    .share-input::selection { background: rgba(255,255,255,0.3); }
+    .btn-copy {
+      padding: 10px 16px;
+      background: rgba(255,255,255,0.18);
+      color: #fff;
+      border: 1.5px solid rgba(255,255,255,0.35);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .btn-copy:hover { background: rgba(255,255,255,0.28); }
+
+    /* View team btn (shown when joining a team) */
+    .btn-view-team {
+      display: none;
+      width: 100%;
+      padding: 12px;
+      margin-top: 12px;
+      background: rgba(255,255,255,0.18);
+      color: #fff;
+      border: 1.5px solid rgba(255,255,255,0.4);
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.15s;
+    }
+    .btn-view-team:hover { background: rgba(255,255,255,0.28); }
+    .btn-view-team.show { display: block; }
+
+    /* CTA card */
+    .cta-card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      padding: 24px 28px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      border-left: 4px solid var(--blue);
+    }
+    .cta-left { flex: 1; min-width: 0; }
+    .cta-left h4 { font-size: 16px; font-weight: 800; color: var(--gray-900); margin-bottom: 6px; }
+    .cta-left p  { font-size: 13px; color: var(--gray-500); line-height: 1.55; }
+    .btn-cta {
+      flex-shrink: 0;
+      padding: 12px 22px;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .btn-cta:hover { background: var(--blue-mid); }
+
+    /* ════════════════════════════════════════
+       TEAM DASHBOARD
+    ════════════════════════════════════════ */
+    #s-team {
+      padding: 24px 16px 64px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .team-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+    }
+    .team-topbar button {
+      font-size: 13px; color: var(--gray-400);
+      background: none; border: none; cursor: pointer;
+    }
+
+    .team-hero {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 36px 40px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .team-hero-eyebrow {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--gray-400); margin-bottom: 12px;
+    }
+    .team-avg-num {
+      font-size: 72px;
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 8px;
+      letter-spacing: -0.03em;
+    }
+    .team-avg-sub { font-size: 15px; color: var(--gray-500); }
+
+    .member-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .member-row:last-child { border-bottom: none; }
+    .member-avatar {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800; color: #fff;
+      flex-shrink: 0;
+    }
+    .member-info { flex: 1; min-width: 0; }
+    .member-name { font-size: 14px; font-weight: 600; color: var(--gray-900); }
+    .member-detail { font-size: 12px; color: var(--gray-400); margin-top: 1px; }
+    .member-right { text-align: right; flex-shrink: 0; }
+    .member-score { font-size: 22px; font-weight: 800; line-height: 1; }
+    .member-sub   { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fadeUp 0.4s ease forwards; }
+
+    /* ── Responsive ── */
+    @media (max-width: 660px) {
+      .land-nav { padding: 16px 20px; }
+      .score-hero { flex-direction: column; align-items: center; gap: 24px; text-align: center; }
+      .two-col { grid-template-columns: 1fr; }
+      .stats-row { flex-direction: column; }
+      .stat-cell:first-child { border-radius: var(--radius) var(--radius) 0 0; }
+      .stat-cell:last-child  { border-radius: 0 0 var(--radius) var(--radius); }
+      .how-steps { flex-direction: column; align-items: center; }
+      .how-step::after { display: none; }
+      .card { padding: 28px 22px; }
+      .cta-card { flex-direction: column; }
+      .invite-top { flex-direction: column; }
+      .invite-top .btn-share { width: 100%; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Worklytics logo SVG (reused via JS clone) -->
+<svg id="wl-logo-src" style="display:none" fill="none" viewBox="0 0 1079 307" xmlns="http://www.w3.org/2000/svg">
+  <g fill="#3960f0">
+    <path d="m242.253 7.29353c3.654-7.894855 1.127-9.04963-3.956-5.05412-9.83 7.72585-17.726 16.83639-24.909 28.51319-26.715 43.4292-40.193 79.6874-59.869 139.1154-.963 2.91-3.725 2.256-4.67 0-8.811-21.054-18.274-54.255-24.38-75.6774-1.834-6.4344-3.365-11.8063-4.485-15.4673-2.138-6.9908-10.467-5.9251-16.205 0-25.8826 26.7267-52.8129 69.3187-69.7368 106.4077-2.7744 6.08-4.8592 3.031-6.421 0-2.9429-5.713-5.4096-11.473-7.6669-16.744-4.4511-10.394-8.0881-18.887-12.95454-21.363-19.66916-10.007 6.73064 72.236 22.55394 97.038 2.7857 4.367 8.5582 4.778 10.7562-.868 15.7261-40.391 33.7457-78.348 55.592-115.129 7.1501-12.039 10.8921-15.225 13.5041-1.371 6.977 37.006 25.708 90.884 41.3 116.215 2.625 4.265 9.653 3.997 11.177-1.522 22.021-79.743 46.778-161.5215 80.37-234.09347z"/>
+    <path d="m542.809 130.064c1.139-1.15.337-3.123-1.27-3.123h-25.282c-.486 0-.951.2-1.29.553l-49.093 51.219v-121.4088c0-1.0093-.806-1.8275-1.801-1.8275h-18.293c-.995 0-1.801.8182-1.801 1.8275v187.2628c0 1.01.806 1.828 1.801 1.828h18.293c.995 0 1.801-.818 1.801-1.828v-60.298l52.974 61.501c.342.397.836.625 1.356.625h26.249c1.564 0 2.384-1.883 1.332-3.057l-55.641-62.096z"/>
+    <path d="m392.242 129.719c3.004-1.849 6.284-3.326 9.853-4.419 3.569-1.092 7.134-1.637 10.702-1.637 3.054 0 5.868.369 8.446 1.108.768.22 1.262.96 1.23 1.769l-.738 18.519c-.093 2.355-2.328 4.001-4.605 3.534-.31-.063-.62-.124-.93-.183-1.782-.336-3.565-.504-5.351-.504-10.699 0-18.891 3.114-24.567 9.342-5.675 6.232-8.513 15.906-8.513 29.046v58.277c0 1.01-.806 1.828-1.8 1.828h-18.29c-.994 0-1.801-.818-1.801-1.828v-116.051c0-1.009.807-1.827 1.801-1.827h18.29c.994 0 1.8.818 1.8 1.827v16.608h.487c1.462-3.198 3.406-6.103 5.841-8.713 2.43-2.61 5.146-4.843 8.145-6.696z"/>
+    <path d="m590.123 55.4767h-18.291c-.994 0-1.8.8182-1.8 1.8275v187.2628c0 1.01.806 1.828 1.8 1.828h18.291c.994 0 1.8-.818 1.8-1.828v-187.2628c0-1.0093-.806-1.8275-1.8-1.8275z"/>
+    <path clip-rule="evenodd" d="m296.546 128.586c7.462 3.279 13.947 7.785 19.461 13.509 5.513 5.723 9.852 12.375 13.014 19.948s4.743 15.742 4.743 24.499c0 8.75-1.581 16.955-4.743 24.616s-7.501 14.313-13.014 19.949c-5.514 5.646-11.999 10.102-19.461 13.391-7.457 3.282-15.484 4.923-24.08 4.923s-16.626-1.644-24.084-4.923c-7.458-3.289-13.947-7.745-19.461-13.391-5.513-5.636-9.852-12.288-13.014-19.949-3.162-7.657-4.743-15.862-4.743-24.616 0-8.753 1.581-16.926 4.743-24.499 3.162-7.576 7.501-14.225 13.014-19.948 5.514-5.724 12.003-10.23 19.461-13.509 7.461-3.286 15.488-4.923 24.084-4.923s16.623 1.637 24.08 4.923zm3.652 87.883c3.245-3.619 5.758-7.997 7.541-13.132 1.782-5.139 2.672-10.735 2.675-16.791 0-6.064-.889-11.663-2.675-16.798-1.783-5.139-4.296-9.514-7.541-13.136-3.245-3.618-7.217-6.48-11.92-8.585-4.706-2.102-9.975-3.154-15.812-3.154-5.838 0-11.11 1.052-15.813 3.154-4.703 2.105-8.675 4.967-11.919 8.585-3.245 3.622-5.755 8.001-7.541 13.136-1.782 5.139-2.676 10.734-2.676 16.798 0 6.056.894 11.655 2.676 16.791 1.783 5.135 4.296 9.51 7.541 13.132 3.244 3.622 7.216 6.483 11.919 8.589 4.703 2.105 9.972 3.154 15.813 3.154 5.837 0 11.109-1.049 15.812-3.154 4.703-2.109 8.679-4.971 11.92-8.589z" fill-rule="evenodd"/>
+    <path d="m905.568 157.88c2.996-3.959 6.727-7.073 11.185-9.346 4.462-2.273 9.687-3.41 15.69-3.41 6.161 0 11.473 1.137 15.931 3.41 4.006 2.041 7.847 4.928 11.525 8.666.701.713 1.835.753 2.56.067l13.937-13.191c.719-.68.769-1.822.09-2.542-5.414-5.736-11.703-10.056-18.864-12.949-7.703-3.117-15.773-4.674-24.207-4.674-9.078 0-17.31 1.557-24.689 4.674-7.375 3.114-13.702 7.449-18.974 13.001-5.269 5.559-9.367 12.207-12.284 19.956-2.92 7.741-4.375 16.246-4.375 25.507 0 9.255 1.455 17.719 4.375 25.376 2.921 7.658 7.058 14.229 12.406 19.7 5.351 5.472 11.718 9.723 19.097 12.752 7.378 3.03 15.528 4.547 24.444 4.547 8.434 0 16.421-1.433 23.958-4.294 7.054-2.676 13.289-6.972 18.709-12.882.641-.699.611-1.783-.047-2.466l-13.033-13.537c-.737-.765-1.958-.725-2.678.057-3.364 3.655-6.98 6.485-10.852 8.495-4.382 2.274-9.654 3.41-15.816 3.41-5.675 0-10.781-1.049-15.322-3.154-4.545-2.105-8.434-5.011-11.675-8.713-3.245-3.706-5.762-8.037-7.541-13.008-1.786-4.963-2.679-10.23-2.679-15.782 0-5.559.774-10.899 2.315-16.034 1.542-5.135 3.81-9.678 6.814-13.636z"/>
+    <path d="m1069.39 187.805c3 2.69 5.35 5.976 7.06 9.846 1.7 3.871 2.55 8.589 2.55 14.141 0 6.736-1.39 12.493-4.14 17.291-2.76 4.799-6.33 8.714-10.71 11.747-4.38 3.027-9.36 5.216-14.96 6.565-5.59 1.345-11.23 2.021-16.9 2.021-9.57 0-17.96-1.517-25.18-4.547-6.38-2.684-12.164-7.341-17.34-13.975-1.164-1.492-.888-3.64.546-4.866l11.444-9.786c1.44-1.233 3.57-1.12 4.95.181 2.93 2.752 6.1 5.248 9.53 7.481 4.38 2.862 9.72 4.295 16.05 4.295 2.76 0 5.56-.292 8.39-.881 2.84-.588 5.36-1.517 7.55-2.778 2.18-1.261 3.97-2.865 5.35-4.799 1.38-1.933 2.06-4.166 2.06-6.692 0-3.366-1.01-6.144-3.04-8.333s-4.46-3.911-7.3-5.175c-2.84-1.265-5.83-2.274-9-3.03-3.16-.76-5.95-1.389-8.39-1.897-4.71-1.177-9.16-2.522-13.38-4.039-4.21-1.517-7.94-3.534-11.19-6.063-3.24-2.522-5.833-5.72-7.781-9.594-1.945-3.871-2.92-8.67-2.92-14.393 0-6.232 1.26-11.656 3.77-16.287 2.517-4.631 5.841-8.457 9.971-11.491 4.14-3.033 8.84-5.307 14.12-6.82 5.26-1.517 10.58-2.27 15.93-2.27 7.78 0 15.24 1.51 22.38 4.544 6.18 2.629 11.27 6.77 15.26 12.432 1.07 1.51.68 3.579-.77 4.716l-11.66 9.165c-1.57 1.23-3.8.93-5.19-.508-2.1-2.189-4.52-4.097-7.25-5.725-3.81-2.274-8.48-3.41-13.99-3.41-5.18 0-9.68 1.136-13.5 3.41-3.81 2.273-5.71 5.599-5.71 9.974 0 3.538 1.09 6.4 3.28 8.589 2.19 2.186 4.78 3.955 7.78 5.303 3 1.345 6.2 2.354 9.61 3.03 3.41.669 6.32 1.261 8.76 1.765 4.7 1.181 9.12 2.614 13.26 4.299 4.13 1.681 7.7 3.87 10.7 6.564z"/>
+    <path d="m671.107 219.89c-.049.142-.181.236-.329.236-.146 0-.277-.092-.328-.23l-33.779-92.018c-.263-.715-.935-1.189-1.687-1.189h-21.375c-1.276 0-2.148 1.31-1.67 2.511l46.658 117.289c.169.425.174.9.014 1.33l-6.802 18.272c-1.134 3.029-2.272 5.727-3.403 8.084-1.134 2.358-2.553 4.419-4.26 6.188-1.703 1.762-3.731 3.11-6.079 4.035-2.355.928-5.232 1.389-8.635 1.389-3.646 0-7.29-.641-10.935-1.925-1.12-.395-2.35.322-2.504 1.515l-2.193 16.972c-.105.81.331 1.597 1.082 1.891 2.691 1.057 5.476 1.765 8.352 2.131 3.324.417 6.605.629 9.849.629 6 0 11.067-.837 15.201-2.522 4.134-1.681 7.666-4.042 10.58-7.072 2.92-3.03 5.434-6.696 7.544-10.987 2.11-4.294 4.134-9.049 6.079-14.269l53.796-142.982c.45-1.196-.42-2.479-1.682-2.479h-19.707c-.763 0-1.443.487-1.697 1.217z"/>
+    <path d="m827.017 72.0147c3.165-3.2857 6.936-4.9231 11.311-4.9231 4.379 0 8.153 1.641 11.315 4.9231 3.162 3.2785 4.742 7.1966 4.742 11.7396 0 4.5467-1.58 8.4612-4.742 11.7433s-6.936 4.9234-11.315 4.9234c-4.375 0-8.146-1.6413-11.311-4.9234-3.162-3.2858-4.743-7.1966-4.743-11.7433 0-4.543 1.581-8.4611 4.743-11.7396z"/>
+    <path d="m784.523 228.208c-4.213 0-7.414-.8-9.604-2.394-2.189-1.601-3.813-3.706-4.868-6.316-1.052-2.613-1.661-5.559-1.826-8.841-.159-3.282-.242-6.608-.242-9.974v-52.466c0-1.01.807-1.828 1.801-1.828h27.783c.994 0 1.8-.818 1.8-1.827v-16.045c0-1.01-.806-1.828-1.8-1.828h-27.783c-.994 0-1.801-.818-1.801-1.827v-29.934c0-1.0093-.806-1.8275-1.8-1.8275h-18.286c-.996 0-1.803.8206-1.801 1.8314l.068 31.7571-.072 19.7v62.379c0 4.879.206 9.722.609 14.521.403 4.798 1.703 9.133 3.893 13.004 2.189 3.874 5.596 7.032 10.216 9.473 4.62 2.442 11.149 3.662 19.583 3.662 2.272 0 5.474-.296 9.611-.884 3.663-.521 6.723-1.407 9.177-2.654.576-.293.917-.903.917-1.557v-16.474c0-1.411-1.526-2.311-2.814-1.78-1.486.612-3.061 1.07-4.727 1.372-2.762.509-5.434.757-8.034.757z"/>
+    <path d="m829.185 126.689h18.293c.995 0 1.801.818 1.801 1.827v116.051c0 1.009-.806 1.827-1.801 1.827h-18.293c-.995 0-1.801-.818-1.801-1.827v-116.051c0-1.009.806-1.827 1.801-1.827z"/>
+  </g>
+</svg>
+
+<!-- ═══════════════════════════════════════
+     SCREEN: LANDING
+════════════════════════════════════════ -->
+<div id="s-landing" class="screen active">
+
+  <nav class="land-nav">
+    <svg class="wl-logo" viewBox="0 0 1079 307" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="showScreen('landing')">
+      <use href="#wl-logo-src"/>
+    </svg>
+    <a href="https://worklytics.co" target="_blank" rel="noopener">worklytics.co</a>
+  </nav>
+
+  <div class="land-hero">
+    <div class="hero-badge">📊 Backed by real benchmark data</div>
+    <h1 class="hero-h1">How meeting-efficient<br>is your <em>team</em>?</h1>
+    <p class="hero-sub">Get your personalized Meeting Efficiency Score and see exactly how your habits compare to thousands of professionals — in 2 minutes.</p>
+    <button class="btn-hero" onclick="startTool()">
+      Get My Score &rarr;
+    </button>
+    <p class="hero-note">Free &middot; No signup required &middot; Powered by Worklytics benchmarks</p>
+
+    <div class="stats-section-label">Industry benchmarks · 200K+ professionals</div>
+    <div class="stats-row">
+      <div class="stat-cell">
+        <div class="stat-big">8.4h</div>
+        <div class="stat-lbl">Median meeting<br>hours per week</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-big">$19K</div>
+        <div class="stat-lbl">Est. annual cost<br>per person</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-big">13</div>
+        <div class="stat-lbl">Median meetings<br>attended per week</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-big">53%</div>
+        <div class="stat-lbl">Of meeting time<br>that's recurring</div>
+      </div>
+    </div>
+
+    <div class="how-section">
+      <div class="how-eyebrow">How it works</div>
+      <div class="how-steps">
+        <div class="how-step">
+          <div class="how-icon">📝</div>
+          <h3>Answer a few questions</h3>
+          <p>Tell us about your role and typical meeting habits. Takes under 2 minutes.</p>
+        </div>
+        <div class="how-step">
+          <div class="how-icon">📈</div>
+          <h3>Get your score</h3>
+          <p>See your 0–100 Meeting Efficiency Score with a full breakdown and benchmarks.</p>
+        </div>
+        <div class="how-step">
+          <div class="how-icon">👥</div>
+          <h3>Compare your team</h3>
+          <p>Share a link with teammates and see a team-level dashboard together.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="land-footer">
+    Based on the Worklytics Metric Benchmarks Report v2025.2 · Jan–Dec 2024 · 200,000+ professionals across 8 industries
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN: FORM
+════════════════════════════════════════ -->
+<div id="s-form" class="screen">
+
+  <div class="form-topbar">
+    <svg class="wl-logo" viewBox="0 0 1079 307" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="showScreen('landing')">
+      <use href="#wl-logo-src"/>
+    </svg>
+    <button onclick="showScreen('landing')">&larr; Back to home</button>
+  </div>
+
+  <div class="card">
+
+    <!-- Team join banner -->
+    <div class="team-banner" id="team-banner">
+      <span class="tb-icon">👥</span>
+      <span>Your teammates are waiting — <strong id="tb-count">–</strong> have already submitted. Add yours to unlock the team dashboard.</span>
+    </div>
+
+    <!-- Progress -->
+    <div class="prog-wrap">
+      <div class="prog-track">
+        <div class="prog-dot active" id="pd1"></div>
+        <div class="prog-line" id="pl1"></div>
+        <div class="prog-dot" id="pd2"></div>
+        <div class="prog-line" id="pl2"></div>
+        <div class="prog-dot" id="pd3"></div>
+      </div>
+      <div class="prog-meta" id="prog-meta">Step 1 of 2 · About you</div>
+    </div>
+
+    <!-- ── STEP 1 ── -->
+    <div id="step-1">
+      <h2 style="font-size:21px;font-weight:800;margin-bottom:4px">How's your calendar?</h2>
+      <p style="font-size:14px;color:var(--gray-500);margin-bottom:20px;line-height:1.55">Answer quickly — we'll compare you to benchmark data from 200K+ professionals.</p>
+
+      <div class="sec-label">About you</div>
+      <div class="field-row">
+        <div class="field">
+          <label for="f-name">First name</label>
+          <input type="text" id="f-name" placeholder="Jane" autocomplete="given-name">
+        </div>
+        <div class="field">
+          <label for="f-email">Work email <span style="font-weight:400;color:var(--gray-400)">(optional)</span></label>
+          <input type="email" id="f-email" placeholder="jane@company.com" autocomplete="email">
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="sec-label">Your role</div>
+      <div class="field">
+        <div class="pill-group">
+          <input type="radio" name="role" id="r-ic" value="ic" checked>
+          <label for="r-ic">Individual Contributor</label>
+          <input type="radio" name="role" id="r-mgr" value="manager">
+          <label for="r-mgr">Manager</label>
+          <input type="radio" name="role" id="r-sl" value="senior_leader">
+          <label for="r-sl">Senior Leader</label>
+        </div>
+      </div>
+
+      <div class="sec-label">Organization size</div>
+      <div class="field">
+        <div class="pill-group">
+          <input type="radio" name="orgSize" id="os-s" value="small" checked>
+          <label for="os-s">Under 10,000 employees</label>
+          <input type="radio" name="orgSize" id="os-l" value="large">
+          <label for="os-l">10,000+ employees</label>
+        </div>
+      </div>
+
+      <button class="btn btn-blue" onclick="goStep2()">Next: Meeting Habits &rarr;</button>
+    </div>
+
+    <!-- ── STEP 2 ── -->
+    <div id="step-2" style="display:none">
+      <h2 style="font-size:21px;font-weight:800;margin-bottom:4px">Your meeting habits</h2>
+      <p style="font-size:14px;color:var(--gray-500);margin-bottom:20px;line-height:1.55">Think about a typical week — not your best or worst.</p>
+
+      <div class="sec-label">Volume</div>
+
+      <div class="field">
+        <label>Meetings per week</label>
+        <div class="slider-wrap">
+          <input type="range" id="f-meetings" min="0" max="40" step="1" value="10"
+            oninput="sv('v-mtg', this.value)">
+          <div class="slider-val" id="v-mtg">10</div>
+        </div>
+        <div class="field-hint">0 = almost none &nbsp;&middot;&nbsp; 40 = back-to-back every day</div>
+      </div>
+
+      <div class="field">
+        <label for="f-duration">Average meeting duration</label>
+        <select id="f-duration">
+          <option value="15">15 minutes</option>
+          <option value="30">30 minutes</option>
+          <option value="45">45 minutes</option>
+          <option value="60" selected>60 minutes (1 hour)</option>
+          <option value="75">75 minutes</option>
+          <option value="90">90 minutes</option>
+        </select>
+      </div>
+
+      <hr class="divider">
+
+      <div class="sec-label">Quality signals</div>
+
+      <div class="field">
+        <label>Average attendees per meeting</label>
+        <div class="slider-wrap">
+          <input type="range" id="f-attendees" min="1" max="25" step="1" value="6"
+            oninput="sv('v-att', this.value)">
+          <div class="slider-val" id="v-att">6</div>
+        </div>
+        <div class="field-hint">1:1s count as 2 &nbsp;&middot;&nbsp; All-hands = 20+</div>
+      </div>
+
+      <div class="field">
+        <label>% of meetings that are recurring</label>
+        <div class="slider-wrap">
+          <input type="range" id="f-recurring" min="0" max="100" step="5" value="50"
+            oninput="sv('v-rec', this.value + '%')">
+          <div class="slider-val" id="v-rec">50%</div>
+        </div>
+        <div class="field-hint">Standups, weeklies, biweeklies, etc.</div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="sec-label">Cost assumption</div>
+
+      <div class="field">
+        <label for="f-rate">Hourly rate per person in your meetings</label>
+        <div class="cost-wrap">
+          <span class="cost-pfx">$</span>
+          <input type="number" id="f-rate" value="150" min="25" max="2000" step="25" onwheel="this.blur()">
+        </div>
+        <div class="field-hint">Default $150/hr — adjust for your industry &amp; seniority</div>
+      </div>
+
+      <button class="btn btn-blue" onclick="submitForm()">Calculate My Score &rarr;</button>
+      <button class="btn btn-ghost" onclick="goStep1()">&larr; Back</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN: RESULTS
+════════════════════════════════════════ -->
+<div id="s-results" class="screen">
+
+  <div class="res-topbar">
+    <svg class="wl-logo" viewBox="0 0 1079 307" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="showScreen('landing')">
+      <use href="#wl-logo-src"/>
+    </svg>
+    <button onclick="resetToForm()">&larr; Start over</button>
+  </div>
+
+  <!-- Score hero -->
+  <div class="score-hero fade-up">
+    <div class="gauge-wrap">
+      <svg class="gauge-svg" viewBox="0 0 180 180">
+        <!-- Track arc: 270° centered, r=70, offset 135° -->
+        <circle cx="90" cy="90" r="70" fill="none"
+          stroke="#f1f5f9" stroke-width="14"
+          stroke-dasharray="329.87" stroke-dashoffset="0"
+          stroke-linecap="round"
+          transform="rotate(135 90 90)"/>
+        <!-- Score arc -->
+        <circle cx="90" cy="90" r="70" fill="none"
+          stroke="#10b981" stroke-width="14"
+          stroke-dasharray="329.87" stroke-dashoffset="329.87"
+          stroke-linecap="round"
+          transform="rotate(135 90 90)"
+          id="gauge-arc"
+          style="transition:stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1),stroke 0.4s"/>
+      </svg>
+      <div class="gauge-center">
+        <div class="gauge-num" id="r-score-num">--</div>
+        <div class="gauge-sub">/ 100</div>
+      </div>
+    </div>
+
+    <div class="score-right">
+      <div class="score-grade" id="r-grade"></div>
+      <div class="score-headline" id="r-headline"></div>
+      <div class="score-summary" id="r-summary"></div>
+    </div>
+  </div>
+
+  <!-- Key metrics -->
+  <div class="metrics-strip">
+    <div class="m-cell">
+      <div class="m-val" id="r-hrs-wk">--h</div>
+      <div class="m-lbl">Meeting hrs<br>/week</div>
+    </div>
+    <div class="m-cell">
+      <div class="m-val" id="r-pct-day">--%</div>
+      <div class="m-lbl">% of workday<br>in meetings</div>
+    </div>
+    <div class="m-cell">
+      <div class="m-val" id="r-focus">--h</div>
+      <div class="m-lbl">Avg focus<br>block/day</div>
+    </div>
+    <div class="m-cell">
+      <div class="m-val blue" id="r-cost">$--</div>
+      <div class="m-lbl">Your annual<br>meeting cost</div>
+    </div>
+  </div>
+
+  <!-- Animal archetype -->
+  <div class="animal-card" id="animal-card">
+    <img class="animal-img" id="animal-img" src="" alt="">
+    <div class="animal-body">
+      <div class="animal-eyebrow">Your meeting archetype</div>
+      <div class="animal-name" id="animal-name">--</div>
+      <div class="animal-desc" id="animal-desc">--</div>
+    </div>
+  </div>
+
+  <!-- Chart + Breakdown -->
+  <div class="two-col">
+
+    <div class="r-card">
+      <div class="r-card-title" id="r-chart-title">vs. Worklytics Benchmark</div>
+      <canvas id="bench-canvas" height="148"></canvas>
+      <div class="chart-footer">
+        <span>Benchmark median: <strong id="r-bm-med">--</strong></span>
+        <span>You: <strong id="r-bm-you">--</strong></span>
+      </div>
+    </div>
+
+    <div class="r-card">
+      <div class="r-card-title">Score breakdown</div>
+      <div id="dims-list"></div>
+    </div>
+
+  </div>
+
+  <!-- Typical day timeline -->
+  <div class="r-card timeline-card">
+    <div class="r-card-title">Simulation of a typical day based on your profile</div>
+    <div id="timeline-container" style="height:230px"></div>
+  </div>
+
+  <!-- Insights -->
+  <div class="insights-card">
+    <div class="r-card-title" style="margin-bottom:0">Insights for <span id="r-name-inline">you</span></div>
+    <div id="insights-list"></div>
+  </div>
+
+  <!-- Team invite -->
+  <div class="invite-card">
+    <div class="invite-top">
+      <div>
+        <h3>Get your team's combined score</h3>
+        <p>Share one link — each teammate gets their own score, and together you unlock a <strong>team-level dashboard</strong> showing your collective meeting efficiency. No accounts or installs needed.</p>
+      </div>
+      <button class="btn-share" id="btn-gen-link" onclick="generateShareLink()">Generate team link →</button>
+    </div>
+    <div class="share-box" id="share-box">
+      <input class="share-input" id="share-link-input" readonly placeholder="Generating link…">
+      <button class="btn-copy" onclick="copyShareLink()">Copy</button>
+    </div>
+    <button class="btn-view-team" id="btn-view-team" onclick="goToTeamDashboard()">
+      → View Team Dashboard
+    </button>
+  </div>
+
+  <!-- Worklytics CTA -->
+  <div class="cta-card">
+    <div class="cta-left">
+      <h4>Want the real picture? Stop guessing.</h4>
+      <p>This tool uses self-reported data. Worklytics connects to your Google or Microsoft calendar to give you exact, privacy-safe analytics for every person on your team — no surveys, no assumptions.</p>
+    </div>
+    <a href="https://worklytics.co" target="_blank" rel="noopener" class="btn-cta">Learn More &rarr;</a>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN: TEAM DASHBOARD
+════════════════════════════════════════ -->
+<div id="s-team" class="screen">
+
+  <div class="team-topbar">
+    <svg class="wl-logo" viewBox="0 0 1079 307" fill="none" xmlns="http://www.w3.org/2000/svg" onclick="showScreen('landing')">
+      <use href="#wl-logo-src"/>
+    </svg>
+    <button onclick="showScreen('results')">&larr; My results</button>
+  </div>
+
+  <!-- Team avg -->
+  <div class="team-hero fade-up">
+    <div class="team-hero-eyebrow">Team Average Score</div>
+    <div class="team-avg-num" id="t-avg-num">--</div>
+    <div class="team-avg-sub" id="t-avg-sub">across -- members</div>
+  </div>
+
+  <!-- Team metrics -->
+  <div class="metrics-strip">
+    <div class="m-cell">
+      <div class="m-val" id="t-avg-hrs">--h</div>
+      <div class="m-lbl">Avg hrs/week<br>in meetings</div>
+    </div>
+    <div class="m-cell">
+      <div class="m-val blue" id="t-total-cost">$--</div>
+      <div class="m-lbl">Combined annual<br>meeting cost</div>
+    </div>
+    <div class="m-cell">
+      <div class="m-val good" id="t-avg-focus">--h</div>
+      <div class="m-lbl">Avg focus<br>time/day</div>
+    </div>
+  </div>
+
+  <!-- Members -->
+  <div class="r-card" style="margin-bottom:16px">
+    <div class="r-card-title" id="t-members-title">Team members</div>
+    <div id="t-members-list"></div>
+  </div>
+
+  <!-- Share link in team view -->
+  <div class="invite-card" style="margin-bottom:16px">
+    <div class="invite-top">
+      <div>
+        <h3>Add more teammates</h3>
+        <p>Share this link to add more people to the dashboard. The link already includes everyone who's submitted.</p>
+      </div>
+      <button class="btn-share" onclick="copyShareLink()">Copy link</button>
+    </div>
+    <div class="share-box show" id="t-share-box">
+      <input class="share-input" id="t-share-input" readonly>
+      <button class="btn-copy" onclick="copyShareLink(true)">Copy</button>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-card">
+    <div class="cta-left">
+      <h4>Ready for the real picture?</h4>
+      <p>Worklytics gives you exact meeting analytics for every person on your team — no surveys, no guessing, no assumptions. Connect your calendar in minutes.</p>
+    </div>
+    <a href="https://worklytics.co" target="_blank" rel="noopener" class="btn-cta">Get Started &rarr;</a>
+  </div>
+
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+// ──────────────────────────────────────────────────────────────
+// BENCHMARK DATA  (from Worklytics Advanced Benchmarks v2025.2)
+// ──────────────────────────────────────────────────────────────
+const BM = {
+  ic: {
+    label: 'Individual Contributor',
+    hrs:  { p25: 4.3,  p50: 7.4,  p75: 11.2, p90: 15.2 },
+  },
+  manager: {
+    label: 'Frontline Manager',
+    hrs:  { p25: 9.5,  p50: 14.1, p75: 18.9, p90: 23.4 },
+  },
+  senior_leader: {
+    label: 'Senior Leader',
+    hrs:  { p25: 12.8, p50: 18.2, p75: 23.7, p90: 28.7 },
+  },
+};
+
+const ROLE_LABELS = {
+  ic: 'Individual Contributor',
+  manager: 'Manager',
+  senior_leader: 'Senior Leader',
+};
+
+const AVATAR_COLORS = [
+  '#3960f0','#10b981','#f59e0b','#8b5cf6',
+  '#ec4899','#06b6d4','#f97316','#84cc16',
+];
+
+// ──────────────────────────────────────────────────────────────
+// STATE
+// ──────────────────────────────────────────────────────────────
+const S = {
+  formData:    null,
+  result:      null,
+  teamEntries: [],   // decoded from URL ?t=
+  shareLink:   '',
+};
+
+// ──────────────────────────────────────────────────────────────
+// SCREEN NAVIGATION
+// ──────────────────────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+  document.getElementById('s-' + id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ──────────────────────────────────────────────────────────────
+// FORM PROGRESS
+// ──────────────────────────────────────────────────────────────
+function setStep(n) {
+  document.getElementById('step-1').style.display = n === 1 ? '' : 'none';
+  document.getElementById('step-2').style.display = n === 2 ? '' : 'none';
+
+  const labels = ['', 'About you', 'Meeting habits'];
+  document.getElementById('prog-meta').textContent = `Step ${n} of 2 · ${labels[n]}`;
+
+  // Dots
+  ['pd1','pd2','pd3'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.className = 'prog-dot' + (i + 1 < n ? ' done' : i + 1 === n ? ' active' : '');
+  });
+  // Lines
+  ['pl1','pl2'].forEach((id, i) => {
+    document.getElementById(id).className = 'prog-line' + (i + 1 < n ? ' done' : '');
+  });
+}
+
+function startTool() { showScreen('form'); setStep(1); }
+
+function goStep2() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { document.getElementById('f-name').focus(); return; }
+  setStep(2);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goStep1() { setStep(1); }
+function resetToForm() { showScreen('form'); setStep(1); }
+
+// Slider value helper
+function sv(id, val) { document.getElementById(id).textContent = val; }
+
+// ──────────────────────────────────────────────────────────────
+// TEAM URL ENCODING
+// ──────────────────────────────────────────────────────────────
+function encodeTeam(entries) {
+  try {
+    // compact: [name, role, score, meetingHrsWeek, focusHrsDay, annualCost]
+    const c = entries.map(e =>
+      [e.name, e.role, e.score,
+       +e.meetingHrsWeek.toFixed(1),
+       +e.focusHrsDay.toFixed(1),
+       e.annualCost]);
+    return btoa(unescape(encodeURIComponent(JSON.stringify(c))));
+  } catch { return ''; }
+}
+
+function decodeTeam(encoded) {
+  try {
+    const c = JSON.parse(decodeURIComponent(escape(atob(encoded))));
+    return c.map(([name, role, score, meetingHrsWeek, focusHrsDay, annualCost]) =>
+      ({ name, role, score, meetingHrsWeek, focusHrsDay, annualCost }));
+  } catch { return []; }
+}
+
+// ──────────────────────────────────────────────────────────────
+// SCORING
+// ──────────────────────────────────────────────────────────────
+function computeScore(data) {
+  const meetingHrsWeek = (data.meetingsPerWeek * data.avgDuration) / 60;
+  const b = BM[data.role].hrs;
+
+  // 1. Meeting Load (40%) — lower hrs vs benchmark = better
+  let loadScore;
+  if      (meetingHrsWeek <= b.p25) loadScore = 100;
+  else if (meetingHrsWeek <= b.p50) loadScore = 100 - 50 * (meetingHrsWeek - b.p25) / (b.p50 - b.p25);
+  else if (meetingHrsWeek <= b.p75) loadScore = 50  - 30 * (meetingHrsWeek - b.p50) / (b.p75 - b.p50);
+  else                              loadScore = Math.max(0, 20 - 20 * (meetingHrsWeek - b.p75) / (b.p90 - b.p75));
+
+  // 2. Meeting Size (20%) — fewer attendees = better
+  const a = data.avgAttendees;
+  let sizeScore;
+  if      (a <= 2)  sizeScore = 100;
+  else if (a <= 5)  sizeScore = 100 - 25 * (a - 2) / 3;
+  else if (a <= 10) sizeScore = 75  - 45 * (a - 5) / 5;
+  else if (a <= 20) sizeScore = 30  - 20 * (a - 10) / 10;
+  else              sizeScore = 10;
+
+  // 3. Recurrence (20%) — sweet spot ~30-55%
+  const r = data.pctRecurring;
+  let recurScore;
+  if      (r < 20)  recurScore = 60;
+  else if (r <= 55) recurScore = 60 + 40 * (r - 20) / 35;
+  else if (r <= 72) recurScore = 100 - 50 * (r - 55) / 17;
+  else              recurScore = Math.max(20, 50 - 30 * (r - 72) / 28);
+
+  // 4. Focus Time (20%) — based on avg uninterrupted gap between meetings
+  //    Focus time = 2h+ contiguous blocks. More/longer meetings = smaller gaps.
+  const meetingHrsDay  = meetingHrsWeek / 5;
+  const meetingsPerDay = data.meetingsPerWeek / 5;
+  const freeMinsPerDay = Math.max(0, 480 - meetingsPerDay * data.avgDuration);
+  // Average gap between meetings (including before first and after last)
+  const avgGapMins     = meetingsPerDay > 0 ? freeMinsPerDay / (meetingsPerDay + 1) : 480;
+  const focusHrsDay    = avgGapMins / 60; // avg uninterrupted block, in hours
+  let focusScore;
+  if      (avgGapMins >= 180) focusScore = 100;  // 3h+ blocks: excellent
+  else if (avgGapMins >= 120) focusScore = 80;   // 2h blocks: solid
+  else if (avgGapMins >= 90)  focusScore = 55;   // 1.5h: limited
+  else if (avgGapMins >= 60)  focusScore = 30;   // 1h: poor
+  else                        focusScore = 10;   // <1h: severely fragmented
+
+  // 5. Calendar Fragmentation (15%) — how chopped up is the workday?
+  //    Separate from focus: measures interruption density, not just block size.
+  let fragmentScore;
+  if      (meetingsPerDay <= 1)  fragmentScore = 100;
+  else if (meetingsPerDay <= 2)  fragmentScore = 82;
+  else if (meetingsPerDay <= 3)  fragmentScore = 62;
+  else if (meetingsPerDay <= 5)  fragmentScore = 38;
+  else if (meetingsPerDay <= 7)  fragmentScore = 18;
+  else                           fragmentScore = 5;
+
+  const total = Math.min(100, Math.max(0, Math.round(
+    loadScore    * 0.35 +
+    sizeScore    * 0.15 +
+    recurScore   * 0.15 +
+    focusScore   * 0.20 +
+    fragmentScore * 0.15
+  )));
+
+  return {
+    total,
+    loadScore:     Math.round(Math.max(0, loadScore)),
+    sizeScore:     Math.round(Math.max(0, sizeScore)),
+    recurScore:    Math.round(Math.max(0, recurScore)),
+    focusScore:    Math.round(Math.max(0, focusScore)),
+    fragmentScore: Math.round(Math.max(0, fragmentScore)),
+    meetingHrsWeek,
+    meetingHrsDay,
+    meetingsPerDay,
+    avgGapMins,
+    focusHrsDay,
+    freeMinsPerDay,
+    annualCost:  Math.round(meetingHrsWeek * 48 * data.hourlyRate),
+    bench:       b,
+  };
+}
+
+// ──────────────────────────────────────────────────────────────
+// HELPERS
+// ──────────────────────────────────────────────────────────────
+function scoreColor(s) {
+  if (s >= 75) return '#10b981';
+  if (s >= 55) return '#f59e0b';
+  if (s >= 35) return '#f97316';
+  return '#ef4444';
+}
+
+// ──────────────────────────────────────────────────────────────
+// ANIMAL ARCHETYPE  (pct = meeting-hour percentile, 0=fewest, 100=most)
+// ──────────────────────────────────────────────────────────────
+const ANIMALS = [
+  { max: 2,  name: 'Hermit Hedgehog',   file: 'hermit-hedgehog.png',   desc: 'Meetings? What meetings? You\'ve achieved what most only dream about.' },
+  { max: 7,  name: 'Solo Salamander',   file: 'solo-salamander.png',   desc: 'Thrives in silence. Your calendar is practically empty — intentionally.' },
+  { max: 16, name: 'Flow State Fox',    file: 'flow-state-fox.png',    desc: 'In the zone. DND is your natural habitat. People wonder where you are.' },
+  { max: 26, name: 'Deep Work Deer',    file: 'deep-work-deer.png',    desc: 'Gracefully elusive to most meeting organizers. Your focus time shows it.' },
+  { max: 37, name: 'Focused Ferret',    file: 'focused-ferret.png',    desc: 'Quick and purposeful. You pick your meetings wisely and guard your time.' },
+  { max: 52, name: 'Balanced Buffalo',  file: 'balanced-buffalo.png',  desc: 'Right in the middle of the herd. A reasonable amount of meetings — well done.' },
+  { max: 63, name: 'Agenda Alpaca',     file: 'agenda-alpaca.png',     desc: 'Mysteriously on every invite. Nobody knows how. Not even you.' },
+  { max: 75, name: 'Recurring Raccoon', file: 'recurring-raccoon.png', desc: 'Same meeting, every Tuesday. You know the one. You always will.' },
+  { max: 85, name: 'Scheduled Sardine', file: 'scheduled-sardine.png', desc: 'Packed in tight with no room to breathe. Your calendar is a tin can.' },
+  { max: 95, name: 'Overloaded Otter',  file: 'overloaded-otter.png',  desc: 'Paddling furiously just to stay afloat. Time to start declining some invites.' },
+  { max: 101,name: 'Meeting Martyr',    file: 'meeting-martyr.png',    desc: 'You\'ve sacrificed your calendar to the meeting gods. Heroic. Unsustainable.' },
+];
+
+function getAnimal(pct) {
+  // pct: normalCDF percentile of meeting hours (0 = fewest, 100 = most)
+  for (const a of ANIMALS) {
+    if (pct < a.max) return a;
+  }
+  return ANIMALS[ANIMALS.length - 1];
+}
+
+function scoreGrade(s) {
+  if (s >= 80) return { label: 'Well Calibrated',   headline: 'Your meeting habits look healthy',           cls: 'good'   };
+  if (s >= 65) return { label: 'Manageable',         headline: 'Some room to tighten up',                    cls: 'warn'   };
+  if (s >= 45) return { label: 'Overloaded',         headline: 'Meetings are eating into your day',          cls: 'orange' };
+  return             { label: 'Meeting-Heavy',       headline: 'Significant impact on your productivity',    cls: 'danger' };
+}
+
+function fmtHrs(h) { return h.toFixed(1) + 'h'; }
+
+function fmtMoney(n) {
+  if (n >= 1000000) return '$' + (n / 1000000).toFixed(1) + 'M';
+  if (n >= 1000)    return '$' + Math.round(n / 1000) + 'K';
+  return '$' + n.toLocaleString();
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ──────────────────────────────────────────────────────────────
+// INSIGHTS
+// ──────────────────────────────────────────────────────────────
+function buildInsights(data, result) {
+  const ins = [];
+  const b   = result.bench;
+  const rl  = ROLE_LABELS[data.role];
+  const hrs = result.meetingHrsWeek.toFixed(1);
+  const fhr = result.focusHrsDay.toFixed(1);
+  const focusLabel = { ic: 'flow time', manager: 'focus time', senior_leader: 'prep time' }[data.role];
+  const minFocus = { ic: 2, manager: 1, senior_leader: 0.5 }[data.role];
+
+  // 1. Meeting load
+  if (result.meetingHrsWeek > b.p75) {
+    ins.push({ icon: '🔴', type: 'red',
+      title: 'High meeting load',
+      text: `You spend ${hrs}h/week in meetings — above the 75th percentile for ${rl}s (benchmark: ${b.p75}h). That's ${(result.meetingHrsWeek - b.p50).toFixed(1)}h more than the median. Start by auditing recurring meetings: cancel, shorten, or make async where possible.`,
+    });
+  } else if (result.meetingHrsWeek > b.p50) {
+    ins.push({ icon: '🟡', type: 'amber',
+      title: 'Slightly above median',
+      text: `At ${hrs}h/week, you're above the ${rl} benchmark median of ${b.p50}h. There's likely room to reclaim an hour or two — especially by shortening meetings from 60 to 45 minutes or shifting some to async.`,
+    });
+  } else {
+    ins.push({ icon: '✅', type: 'green',
+      title: 'Meeting load looks healthy',
+      text: `At ${hrs}h/week, you're at or below the ${rl} benchmark median of ${b.p50}h. That's a good sign — you're protecting time for focused work. Keep an eye on meeting creep as your role evolves.`,
+    });
+  }
+
+  // 2. Focus time
+  if (result.focusHrsDay < minFocus) {
+    ins.push({ icon: '⚠️', type: 'amber',
+      title: `Insufficient ${focusLabel}`,
+      text: `You have only ~${fhr}h of uninterrupted time per day — below the recommended ${minFocus}h minimum for a ${rl}. Try "calendar bookending": cluster meetings at the start or end of your day to create longer free blocks without canceling anything.`,
+    });
+  } else if (result.focusHrsDay < minFocus * 2) {
+    ins.push({ icon: '🟡', type: 'amber',
+      title: `Limited ${focusLabel}`,
+      text: `You have roughly ${fhr}h of uninterrupted time per day — enough to get something done, but tight. Protecting even one additional hour could meaningfully improve your output quality.`,
+    });
+  } else {
+    ins.push({ icon: '✅', type: 'green',
+      title: `Good ${focusLabel}`,
+      text: `With ~${fhr}h of uninterrupted time per day, you have solid space for deep work. Protect those blocks actively — they're one of the most valuable things on your calendar.`,
+    });
+  }
+
+  // 3. Meeting size
+  if (data.avgAttendees >= 10) {
+    ins.push({ icon: '👥', type: 'red',
+      title: 'Large meetings dominate your calendar',
+      text: `An average of ${data.avgAttendees} people per meeting is high. Large meetings are often associated with diffused accountability and lower engagement. Ask: who truly needs to be in the room vs. who just needs a summary afterward?`,
+    });
+  } else if (data.avgAttendees >= 7) {
+    ins.push({ icon: '👥', type: 'blue',
+      title: 'Meeting sizes could be leaner',
+      text: `Averaging ${data.avgAttendees} attendees per meeting leaves room to be more selective. Research shows decision quality tends to improve with smaller, focused groups. Consider a "mandatory vs. optional" attendee policy.`,
+    });
+  }
+
+  // 4. Recurrence
+  if (data.pctRecurring > 70) {
+    ins.push({ icon: '🔁', type: 'amber',
+      title: 'High recurring meeting load',
+      text: `${data.pctRecurring}% of your meetings are recurring — above the typical healthy range of 30–55%. Recurring meetings are efficient when they serve a real need, but tend to outlive their usefulness. Schedule a quarterly "recurring audit."`,
+    });
+  } else if (data.pctRecurring < 20) {
+    ins.push({ icon: '🔁', type: 'blue',
+      title: 'Few recurring meetings',
+      text: `Only ${data.pctRecurring}% of your meetings are recurring. While that keeps flexibility, very ad-hoc scheduling patterns can make collaboration harder to predict and plan around for your teammates.`,
+    });
+  }
+
+  // 5. Cost (always)
+  const costStr = fmtMoney(result.annualCost);
+  const saving10 = fmtMoney(Math.round(result.annualCost * 0.10));
+  ins.push({ icon: '💰', type: 'blue',
+    title: `${costStr}/year in meeting time`,
+    text: `Your time only: ${hrs}h/week × 48 weeks × $${data.hourlyRate}/hr. This is the salary cost of your meeting hours — not counting other attendees. A 10% reduction in meeting load would reclaim roughly ${saving10}/year of productive time.`,
+  });
+
+  return ins.slice(0, 4);
+}
+
+// ──────────────────────────────────────────────────────────────
+// BELL CURVE CHART (canvas)
+// ──────────────────────────────────────────────────────────────
+function gaussPDF(x, mu, sigma) {
+  return Math.exp(-0.5 * ((x - mu) / sigma) ** 2) / (sigma * Math.sqrt(2 * Math.PI));
+}
+
+function normalCDF(x, mu, sigma) {
+  const z = (x - mu) / (sigma * Math.SQRT2);
+  const t = 1 / (1 + 0.3275911 * Math.abs(z));
+  const e = 1 - t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 +
+            t * (-1.453152027 + t * 1.061405429)))) * Math.exp(-z * z);
+  return 0.5 * (1 + (z >= 0 ? 1 : -1) * e);
+}
+
+function iqrSigma(p25, p75) { return (p75 - p25) / (2 * 0.6745); }
+
+function ordinal(n) {
+  if (n >= 11 && n <= 13) return n + 'th';
+  switch (n % 10) {
+    case 1: return n + 'st';
+    case 2: return n + 'nd';
+    case 3: return n + 'rd';
+    default: return n + 'th';
+  }
+}
+
+function drawBellChart(canvas, myHrs, bench) {
+  const mu    = bench.p50;
+  const sigma = iqrSigma(bench.p25, bench.p75);
+  const xMax  = Math.ceil((mu + 3.2 * sigma) / 5) * 5;
+  const N     = 220;
+  const xs    = Array.from({ length: N }, (_, i) => (i / (N - 1)) * xMax);
+  const ys    = xs.map(x => gaussPDF(x, mu, sigma));
+  const maxY  = Math.max(...ys);
+
+  const pct  = Math.round(normalCDF(myHrs, mu, sigma) * 100);
+  const clr  = scoreColor(100 - Math.min(pct, 100)); // high percentile = bad score
+
+  // Canvas setup
+  const W = canvas.offsetWidth || 300;
+  const H = canvas.height;
+  canvas.width = Math.round(W * (window.devicePixelRatio || 1));
+  canvas.height = Math.round(H * (window.devicePixelRatio || 1));
+  const ctx = canvas.getContext('2d');
+  ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+
+  const mL = 32, mR = 12, mT = 22, mB = 26;
+  const cW = W - mL - mR;
+  const cH = H - mT - mB;
+  const baseY = mT + cH;
+
+  const sx = v => mL + (v / xMax) * cW;
+  const sy = y => mT + cH - (y / maxY) * cH * 0.86;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Fill + stroke curve
+  ctx.beginPath();
+  ctx.moveTo(sx(0), baseY);
+  xs.forEach((x, i) => ctx.lineTo(sx(x), sy(ys[i])));
+  ctx.lineTo(sx(xMax), baseY);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(57,96,240,0.08)';
+  ctx.fill();
+
+  ctx.beginPath();
+  xs.forEach((x, i) => i === 0 ? ctx.moveTo(sx(x), sy(ys[i])) : ctx.lineTo(sx(x), sy(ys[i])));
+  ctx.strokeStyle = 'rgba(57,96,240,0.35)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Baseline
+  ctx.beginPath(); ctx.moveTo(mL, baseY); ctx.lineTo(mL + cW, baseY);
+  ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1; ctx.stroke();
+
+  // X-axis ticks
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = '10px system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  for (let i = 0; i <= 5; i++) {
+    const v = (i / 5) * xMax;
+    ctx.fillText(Math.round(v) + 'h', sx(v), baseY + 16);
+  }
+
+  // Median dashed line
+  const mx = sx(mu);
+  ctx.setLineDash([3, 3]);
+  ctx.beginPath(); ctx.moveTo(mx, mT - 2); ctx.lineTo(mx, baseY);
+  ctx.strokeStyle = 'rgba(100,116,139,0.45)'; ctx.lineWidth = 1;
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = 'bold 9px system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('median', mx, mT - 4);
+
+  // Shaded area under "you"
+  const myX = Math.max(0, Math.min(myHrs, xMax));
+  const youX = sx(myX);
+  ctx.beginPath();
+  ctx.moveTo(sx(0), baseY);
+  for (let i = 0; i < xs.length && xs[i] <= myX; i++) ctx.lineTo(sx(xs[i]), sy(ys[i]));
+  ctx.lineTo(youX, baseY);
+  ctx.closePath();
+  ctx.fillStyle = clr + '28';
+  ctx.fill();
+
+  // "You" vertical line + dot
+  const closestIdx = xs.reduce((b, x, i) => Math.abs(x - myX) < Math.abs(xs[b] - myX) ? i : b, 0);
+  const dotY = sy(ys[closestIdx]);
+
+  ctx.beginPath(); ctx.moveTo(youX, dotY); ctx.lineTo(youX, baseY);
+  ctx.strokeStyle = clr; ctx.lineWidth = 2; ctx.stroke();
+
+  ctx.beginPath(); ctx.arc(youX, dotY, 5, 0, Math.PI * 2);
+  ctx.fillStyle = clr; ctx.fill();
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+
+  // "you (Xth)" label
+  const spaceRight = (W - mR) - youX;
+  const goRight = spaceRight > 60;
+  ctx.fillStyle = clr;
+  ctx.font = 'bold 10px system-ui, sans-serif';
+  ctx.textAlign = goRight ? 'left' : 'right';
+  // pct = percentile of meeting hours (high = more meetings = worse efficiency)
+  // Flip to efficiency framing: "bottom X%" is more intuitive than "Xth percentile"
+  const effPct = Math.max(1, Math.min(99, 100 - pct));
+  const label  = effPct <= 50
+    ? `you (worst ${effPct}%)`
+    : `you (top ${100 - effPct}%)`;
+  ctx.fillText(label, goRight ? youX + 9 : youX - 9, dotY - 8);
+}
+
+// ──────────────────────────────────────────────────────────────
+// GAUGE ANIMATION
+// ──────────────────────────────────────────────────────────────
+function animateGauge(score) {
+  const arc   = document.getElementById('gauge-arc');
+  const numEl = document.getElementById('r-score-num');
+  const clr   = scoreColor(score);
+  const total = 329.87; // full 270° arc at r=70
+
+  arc.style.stroke = clr;
+  setTimeout(() => {
+    arc.style.strokeDashoffset = total * (1 - score / 100);
+  }, 80);
+
+  // Count-up
+  const dur = 1200;
+  const t0  = performance.now();
+  function tick(now) {
+    const p = Math.min(1, (now - t0) / dur);
+    const e = 1 - Math.pow(1 - p, 3); // ease-out cubic
+    numEl.textContent = Math.round(e * score);
+    if (p < 1) requestAnimationFrame(tick);
+    else numEl.textContent = score;
+  }
+  requestAnimationFrame(tick);
+}
+
+// ──────────────────────────────────────────────────────────────
+// RENDER RESULTS
+// ──────────────────────────────────────────────────────────────
+function renderResults(data, result) {
+  const { total, loadScore, sizeScore, recurScore, focusScore, fragmentScore,
+          meetingHrsWeek, meetingsPerDay, avgGapMins, focusHrsDay, freeMinsPerDay, annualCost, bench } = result;
+
+  const g = scoreGrade(total);
+  const clr = scoreColor(total);
+
+  // Grade + headline + summary
+  const gradeEl = document.getElementById('r-grade');
+  gradeEl.textContent = g.label;
+  gradeEl.style.color = clr;
+
+  document.getElementById('r-headline').textContent = g.headline;
+
+  // Animal archetype — based on meeting-hour percentile vs benchmark
+  const mu    = bench.p50;
+  const sigma = iqrSigma(bench.p25, bench.p75);
+  const meetingPct = Math.round(normalCDF(meetingHrsWeek, mu, sigma) * 100);
+  const animal = getAnimal(meetingPct);
+  document.getElementById('animal-img').src = `animal-icons/${animal.file}`;
+  document.getElementById('animal-img').alt = animal.name;
+  document.getElementById('animal-name').textContent = animal.name;
+  document.getElementById('animal-desc').textContent = animal.desc;
+
+  const pctDay = Math.round((meetingHrsWeek / 5 / 8) * 100);
+  const avgGapLabel = avgGapMins >= 120 ? `~${fmtHrs(focusHrsDay)} avg uninterrupted block`
+                    : avgGapMins >= 60  ? `~${Math.round(avgGapMins)}min avg gap between meetings`
+                    : `only ~${Math.round(avgGapMins)}min avg between meetings`;
+  document.getElementById('r-summary').textContent =
+    `${data.name || 'You'} spend about ${fmtHrs(meetingHrsWeek)}/week in meetings — ` +
+    `${pctDay}% of the workday — with ${avgGapLabel}. ` +
+    `Your time in meetings costs an estimated ${fmtMoney(annualCost)}/year.`;
+
+  document.getElementById('r-name-inline').textContent = data.name || 'you';
+
+  // Gauge
+  animateGauge(total);
+
+  // Metrics
+  document.getElementById('r-hrs-wk').textContent = fmtHrs(meetingHrsWeek);
+  document.getElementById('r-pct-day').textContent = pctDay + '%';
+
+  const focusEl = document.getElementById('r-focus');
+  focusEl.textContent = fmtHrs(focusHrsDay);
+  focusEl.className = 'm-val ' + (avgGapMins >= 120 ? 'good' : avgGapMins >= 60 ? 'warn' : 'danger');
+
+  document.getElementById('r-cost').textContent = fmtMoney(annualCost);
+
+  // Chart
+  document.getElementById('r-chart-title').textContent =
+    `vs. ${BM[data.role].label} Benchmark`;
+  document.getElementById('r-bm-med').textContent = bench.p50 + 'h/wk';
+  document.getElementById('r-bm-you').textContent = fmtHrs(meetingHrsWeek) + '/wk';
+  const canvas = document.getElementById('bench-canvas');
+  setTimeout(() => drawBellChart(canvas, meetingHrsWeek, bench), 150);
+
+  // Dimension bars
+  const dims = [
+    { icon: '⏱', name: 'Load',          score: loadScore,     pct: '35%' },
+    { icon: '🎯', name: 'Focus Time',    score: focusScore,    pct: '20%' },
+    { icon: '🗓', name: 'Fragmentation', score: fragmentScore, pct: '15%' },
+    { icon: '👥', name: 'Meeting Size',  score: sizeScore,     pct: '15%' },
+    { icon: '🔁', name: 'Recurrence',    score: recurScore,    pct: '15%' },
+  ];
+  document.getElementById('dims-list').innerHTML = dims.map(d => `
+    <div class="dim-row">
+      <div class="dim-icon">${d.icon}</div>
+      <div class="dim-name">${d.name}</div>
+      <div class="dim-track">
+        <div class="dim-bar" data-w="${d.score}" style="width:0%;background:${scoreColor(d.score)}"></div>
+      </div>
+      <div class="dim-score" style="color:${scoreColor(d.score)}">${d.score}</div>
+      <div class="dim-weight">${d.pct}</div>
+    </div>
+  `).join('');
+  setTimeout(() => {
+    document.querySelectorAll('.dim-bar').forEach(el => {
+      el.style.width = el.dataset.w + '%';
+    });
+  }, 250);
+
+  // Typical day timeline
+  setTimeout(() => {
+    const focusLabel = { ic: 'Flow Time', manager: 'Focus Time', senior_leader: 'Prep Time' }[data.role];
+    const container = document.getElementById('timeline-container');
+    if (container && typeof renderFocusTimeline === 'function') {
+      renderFocusTimeline(container, {
+        workStart:            480,
+        workEnd:              1080,
+        numMeetings:          Math.round(meetingsPerDay),
+        meetingMinutes:       Math.round(meetingsPerDay * data.avgDuration),
+        numChat:              12,
+        numEmails:            6,
+        focusHoursDaily:      null,   // let library derive from generated schedule
+        fragmentedHoursDaily: null,   // let library derive from generated schedule
+        focusThr:             120,
+        rampMin:              12,
+        focusLabel,
+      });
+    }
+  }, 200);
+
+  // Insights
+  const insights = buildInsights(data, result);
+  document.getElementById('insights-list').innerHTML = insights.map(ins => `
+    <div class="insight-row">
+      <div class="ins-icon ${ins.type}">${ins.icon}</div>
+      <div class="ins-body">
+        <h4>${esc(ins.title)}</h4>
+        <p>${esc(ins.text)}</p>
+      </div>
+    </div>
+  `).join('');
+
+  // If joining a team, show "View Team Dashboard" button
+  if (S.teamEntries.length > 0) {
+    document.getElementById('btn-view-team').classList.add('show');
+    generateShareLink(); // auto-generate so the link is ready
+  }
+}
+
+// ──────────────────────────────────────────────────────────────
+// SHARE LINK
+// ──────────────────────────────────────────────────────────────
+function buildShareLink() {
+  if (!S.result) return '';
+  const myEntry = {
+    name:           S.formData.name || 'Anonymous',
+    role:           S.formData.role,
+    score:          S.result.total,
+    meetingHrsWeek: S.result.meetingHrsWeek,
+    focusHrsDay:    S.result.focusHrsDay,
+    annualCost:     S.result.annualCost,
+  };
+  const all = [...S.teamEntries, myEntry];
+  const encoded = encodeTeam(all);
+  const base = location.origin + location.pathname;
+  return base + '?t=' + encoded;
+}
+
+function generateShareLink() {
+  const link = buildShareLink();
+  S.shareLink = link;
+
+  document.getElementById('share-link-input').value = link;
+  document.getElementById('share-box').classList.add('show');
+  document.getElementById('btn-gen-link').textContent = '✓ Link ready';
+  document.getElementById('btn-gen-link').disabled = true;
+  document.getElementById('btn-gen-link').style.opacity = '0.65';
+}
+
+function copyShareLink(fromTeamView = false) {
+  const link = S.shareLink || buildShareLink();
+  if (!link) return;
+
+  if (fromTeamView) {
+    document.getElementById('t-share-input').value = link;
+  }
+
+  navigator.clipboard.writeText(link).then(() => {
+    const btns = document.querySelectorAll('.btn-copy');
+    btns.forEach(b => {
+      b.textContent = 'Copied!';
+      setTimeout(() => { b.textContent = 'Copy'; }, 2200);
+    });
+  }).catch(() => {
+    // Fallback: select the input
+    const inp = document.getElementById(fromTeamView ? 't-share-input' : 'share-link-input');
+    if (inp) { inp.select(); document.execCommand('copy'); }
+  });
+}
+
+// ──────────────────────────────────────────────────────────────
+// TEAM DASHBOARD
+// ──────────────────────────────────────────────────────────────
+function goToTeamDashboard() {
+  const myEntry = {
+    name:           S.formData.name || 'Anonymous',
+    role:           S.formData.role,
+    score:          S.result.total,
+    meetingHrsWeek: S.result.meetingHrsWeek,
+    focusHrsDay:    S.result.focusHrsDay,
+    annualCost:     S.result.annualCost,
+  };
+  renderTeamDashboard([...S.teamEntries, myEntry]);
+  showScreen('team');
+}
+
+function renderTeamDashboard(entries) {
+  const n = entries.length;
+
+  // Header
+  document.getElementById('t-members-title').textContent =
+    `Team members · ${n} submitted`;
+
+  // Averages
+  const avgScore = Math.round(entries.reduce((s, e) => s + e.score, 0) / n);
+  const avgHrs   = entries.reduce((s, e) => s + e.meetingHrsWeek, 0) / n;
+  const avgFocus = entries.reduce((s, e) => s + e.focusHrsDay, 0) / n;
+  const totCost  = entries.reduce((s, e) => s + e.annualCost, 0);
+
+  const avgNumEl = document.getElementById('t-avg-num');
+  avgNumEl.textContent = avgScore;
+  avgNumEl.style.color = scoreColor(avgScore);
+  document.getElementById('t-avg-sub').textContent =
+    `across ${n} team member${n !== 1 ? 's' : ''}`;
+
+  document.getElementById('t-avg-hrs').textContent    = fmtHrs(avgHrs);
+  document.getElementById('t-total-cost').textContent = fmtMoney(totCost);
+  document.getElementById('t-avg-focus').textContent  = fmtHrs(avgFocus);
+
+  // Members list (sorted best score first)
+  const sorted = [...entries].sort((a, b) => b.score - a.score);
+  document.getElementById('t-members-list').innerHTML = sorted.map((e, i) => `
+    <div class="member-row">
+      <div class="member-avatar" style="background:${AVATAR_COLORS[i % AVATAR_COLORS.length]}">
+        ${esc(e.name.charAt(0).toUpperCase())}
+      </div>
+      <div class="member-info">
+        <div class="member-name">${esc(e.name)}</div>
+        <div class="member-detail">${esc(ROLE_LABELS[e.role] || e.role)} · ${fmtHrs(e.meetingHrsWeek)}/wk in meetings</div>
+      </div>
+      <div class="member-right">
+        <div class="member-score" style="color:${scoreColor(e.score)}">${e.score}</div>
+        <div class="member-sub">${fmtHrs(e.focusHrsDay)}/day focus</div>
+      </div>
+    </div>
+  `).join('');
+
+  // Pre-populate share link
+  const link = S.shareLink || buildShareLink();
+  if (link) document.getElementById('t-share-input').value = link;
+}
+
+// ──────────────────────────────────────────────────────────────
+// FORM SUBMIT
+// ──────────────────────────────────────────────────────────────
+function submitForm() {
+  const data = {
+    name:            document.getElementById('f-name').value.trim() || 'You',
+    email:           document.getElementById('f-email').value.trim(),
+    role:            document.querySelector('input[name="role"]:checked')?.value || 'ic',
+    orgSize:         document.querySelector('input[name="orgSize"]:checked')?.value || 'small',
+    meetingsPerWeek: +document.getElementById('f-meetings').value,
+    avgDuration:     +document.getElementById('f-duration').value,
+    avgAttendees:    +document.getElementById('f-attendees').value,
+    pctRecurring:    +document.getElementById('f-recurring').value,
+    hourlyRate:      +document.getElementById('f-rate').value || 150,
+  };
+
+  const result = computeScore(data);
+  S.formData = data;
+  S.result   = result;
+
+  showScreen('results');
+  renderResults(data, result);
+}
+
+// ──────────────────────────────────────────────────────────────
+// INIT — check URL for team param
+// ──────────────────────────────────────────────────────────────
+(function init() {
+  const param = new URLSearchParams(location.search).get('t');
+  if (param) {
+    const entries = decodeTeam(param);
+    if (entries.length > 0) {
+      S.teamEntries = entries;
+      // Show team join banner
+      const n = entries.length;
+      document.getElementById('tb-count').textContent =
+        `${n} teammate${n !== 1 ? 's' : ''}`;
+      document.getElementById('team-banner').classList.add('show');
+      // Go straight to form, skip landing
+      showScreen('form');
+      setStep(1);
+      return;
+    }
+  }
+  showScreen('landing');
+})();
+
+// ══════════════════════════════════════════════════════════════
+// FOCUS TIMELINE VISUALIZATION (inlined from focus_timeline.js)
+// ══════════════════════════════════════════════════════════════
+(function (global) {
+  'use strict';
+
+  function makeRNG(seed) {
+    let s = (Math.abs(Math.round(seed)) >>> 0) || 1_234_567;
+    return () => {
+      s ^= s << 13; s ^= s >> 17; s ^= s << 5;
+      return (s >>> 0) / 0x1_0000_0000;
+    };
+  }
+
+  const f = v => Number(v).toFixed(1);
+
+  function generateSchedule({
+    meetingMinutes, numMeetings, numChat, numEmails,
+    focusHoursDaily, fragmentedHoursDaily, focusThr, workStart, workEnd,
+  }) {
+    const rng = makeRNG(
+      Math.round(meetingMinutes) * 10_007 +
+      numMeetings               *    997 +
+      numChat                   *    101 +
+      numEmails                 *     37
+    );
+    const buf = 5, aStart = workStart + buf, aEnd = workEnd - buf, aLen = aEnd - aStart;
+    const focusMin = focusHoursDaily ? Math.round(focusHoursDaily * 60) : 0;
+    const hasFocus = focusMin >= focusThr;
+    const focusBuf = 15;
+    let focusStart = null, focusEnd = null;
+    if (hasFocus) {
+      const span = Math.max(0, aLen - focusMin);
+      focusStart = Math.round(aStart + (0.15 + rng() * 0.50) * span);
+      focusEnd   = focusStart + focusMin;
+    }
+    const windows = hasFocus
+      ? [{ start: aStart, end: focusStart - focusBuf }, { start: focusEnd + focusBuf, end: aEnd }]
+          .filter(w => w.end - w.start >= 20)
+      : [{ start: aStart, end: aEnd }];
+    const totalWinLen = windows.reduce((s, w) => s + Math.max(0, w.end - w.start), 0);
+    const meetingDurations = Array.from({ length: numMeetings }, () => rng() < 0.5 ? 30 : 60);
+    const sortedPos = Array.from({ length: numMeetings }, rng).sort((a, b) => a - b);
+    const meetings = sortedPos.map((pos, idx) => {
+      const thisDur = meetingDurations[idx];
+      let t = pos * totalWinLen, cumLen = 0;
+      for (const w of windows) {
+        const wLen = Math.max(0, w.end - w.start);
+        if (t <= cumLen + wLen) {
+          const localT   = wLen > 0 ? (t - cumLen) / wLen : 0;
+          const rawStart = Math.round(w.start + localT * Math.max(0, wLen - thisDur));
+          const start    = Math.max(w.start, Math.min(w.end - 15, rawStart));
+          const maxDur   = Math.max(15, w.end - start);
+          return { type: 'meeting', start, duration: Math.max(15, Math.min(maxDur, thisDur)) };
+        }
+        cumLen += wLen;
+      }
+      return { type: 'meeting', start: windows[0]?.start ?? aStart, duration: thisDur };
+    });
+    meetings.sort((a, b) => a.start - b.start);
+    for (let i = 1; i < meetings.length; i++) {
+      const prev = meetings[i - 1];
+      meetings[i].start = Math.max(meetings[i].start, prev.start + prev.duration + 15);
+    }
+    const validMeetings = meetings.filter(m => {
+      if (m.start + m.duration > aEnd) return false;
+      if (hasFocus && m.start < focusEnd + focusBuf && m.start + m.duration > focusStart - focusBuf) return false;
+      return true;
+    });
+    const occupied = [...validMeetings.map(m => ({ s: m.start - 15, e: m.start + m.duration + 15 }))];
+    const tryPlace = (type, duration, buffer = 10) => {
+      for (let attempt = 0; attempt < 60; attempt++) {
+        const t = Math.round(aStart + rng() * (aLen - duration));
+        if (hasFocus && t + duration > focusStart - focusBuf && t < focusEnd + focusBuf) continue;
+        if (!occupied.some(o => t < o.e && t + duration > o.s)) {
+          occupied.push({ s: t - buffer, e: t + duration + buffer });
+          return { type, start: t, duration };
+        }
+      }
+      return null;
+    };
+    const emailClusters = Math.max(2, Math.round(numEmails / 3));
+    const chatClusters  = Math.max(2, Math.round(numChat   / 4));
+    const emailEvents   = Array.from({ length: emailClusters }, () => tryPlace('email', 5, 5)).filter(Boolean);
+    const chatEvents    = Array.from({ length: chatClusters  }, () => tryPlace('chat',  5, 5)).filter(Boolean);
+    const allEvents     = [...validMeetings, ...emailEvents, ...chatEvents];
+    if (fragmentedHoursDaily != null) {
+      const targetFragMin = Math.round(fragmentedHoursDaily * 60);
+      for (let i = 0; i < 40; i++) {
+        const sorted   = allEvents.slice().sort((a, b) => a.start - b.start);
+        const fragTotal = getFragmentedBlocks(sorted, workStart, workEnd, focusThr, 15)
+          .reduce((s, b) => s + b.end - b.start, 0);
+        if (fragTotal <= targetFragMin + 15) break;
+        const ev = tryPlace('chat', 5, 5);
+        if (!ev) break;
+        allEvents.push(ev);
+      }
+    }
+    allEvents.sort((a, b) => a.start - b.start);
+    if (hasFocus) {
+      const noOverlap = (s, d) => !allEvents.some(e => e.start < s + d && e.start + e.duration > s);
+      const tPre  = focusStart - 6, tPost = focusEnd + 2;
+      if (tPre  >= workStart && tPre  + 5 <= workEnd && noOverlap(tPre,  5)) allEvents.push({ type: 'chat', start: tPre,  duration: 5 });
+      if (tPost >= workStart && tPost + 5 <= workEnd && noOverlap(tPost, 5)) allEvents.push({ type: 'chat', start: tPost, duration: 5 });
+      allEvents.sort((a, b) => a.start - b.start);
+      allEvents.push({ type: 'fragmented', start: focusStart - 1, duration: 1 });
+      allEvents.push({ type: 'fragmented', start: focusEnd,       duration: 1 });
+      allEvents.sort((a, b) => a.start - b.start);
+    }
+    return { events: allEvents, hasFocus, focusStart, focusEnd };
+  }
+
+  function buildTimeline(events, workStart, workEnd, focusThr) {
+    const classify = dur => dur >= focusThr ? 'focus' : 'fragmented';
+    const segs = [];
+    let t = workStart;
+    for (const ev of events) {
+      if (ev.start > t) segs.push({ start: t, end: ev.start, type: classify(ev.start - t), isGap: true });
+      segs.push({ start: ev.start, end: ev.start + ev.duration, type: ev.type, isGap: false });
+      t = ev.start + ev.duration;
+    }
+    if (t < workEnd) segs.push({ start: t, end: workEnd, type: classify(workEnd - t), isGap: true });
+    return segs;
+  }
+
+  function getFocusBlocks(events, workStart, workEnd, focusThr) {
+    const blocks = []; let t = workStart;
+    for (const ev of events) {
+      if (ev.start - t >= focusThr) blocks.push({ start: t, end: ev.start });
+      t = ev.start + ev.duration;
+    }
+    if (workEnd - t >= focusThr) blocks.push({ start: t, end: workEnd });
+    return blocks;
+  }
+
+  function getFragmentedBlocks(events, workStart, workEnd, focusThr, minGap) {
+    const blocks = []; let t = workStart;
+    for (const ev of events) {
+      const gap = ev.start - t;
+      if (gap >= minGap && gap < focusThr) blocks.push({ start: t, end: ev.start });
+      t = ev.start + ev.duration;
+    }
+    const gap = workEnd - t;
+    if (gap >= minGap && gap < focusThr) blocks.push({ start: t, end: workEnd });
+    return blocks;
+  }
+
+  function plateauPath(x0, x3, y0, y1, rampPx) {
+    const x1 = x0 + rampPx, x2 = x3 - rampPx, cx = rampPx * 0.55;
+    if (x2 <= x1) {
+      const mx = (x0 + x3) / 2;
+      return `M${f(x0)},${f(y0)} C${f(x0+cx)},${f(y0)} ${f(mx)},${f(y1)} ${f(mx)},${f(y1)} C${f(mx)},${f(y1)} ${f(x3-cx)},${f(y0)} ${f(x3)},${f(y0)} Z`;
+    }
+    return `M${f(x0)},${f(y0)} C${f(x0+cx)},${f(y0)} ${f(x1-cx)},${f(y1)} ${f(x1)},${f(y1)} L${f(x2)},${f(y1)} C${f(x2+cx)},${f(y1)} ${f(x3-cx)},${f(y0)} ${f(x3)},${f(y0)} Z`;
+  }
+
+  function archPath(x0, x3, y0, y1) {
+    const w = x3 - x0, mx = (x0 + x3) / 2, hx = w * 0.22;
+    return `M${f(x0)},${f(y0)} C${f(x0+hx)},${f(y1)} ${f(mx-hx)},${f(y1)} ${f(mx)},${f(y1)} C${f(mx+hx)},${f(y1)} ${f(x3-hx)},${f(y1)} ${f(x3)},${f(y0)} Z`;
+  }
+
+  const TEMPLATE = `
+<style>
+  .ftl { display:flex; flex-direction:column; width:100%; height:100%; padding:4px 8px 0; box-sizing:border-box; overflow:hidden; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; justify-content:center; }
+  .ftl-chart { flex-shrink:0; position:relative; overflow:hidden; }
+  .ftl-stats { text-align:center; flex-shrink:0; margin-top:4px; font-size:12px; color:#64748b; line-height:1.4; }
+  .ftl-stats b { font-weight:700; color:#374151; }
+  .ftl-legend { display:flex; gap:12px; justify-content:center; flex-shrink:0; margin-top:6px; font-size:11px; color:#374151; flex-wrap:wrap; border:1.5px solid #e2e8f0; border-radius:8px; padding:5px 14px; background:#f8fafc; }
+  .ftl-li { display:flex; align-items:center; gap:5px; font-weight:500; }
+  .ftl-sw { width:13px; height:13px; border-radius:3px; flex-shrink:0; border:1px solid rgba(0,0,0,0.12); }
+  @keyframes ftl-bubble { from { transform:scaleY(0); opacity:0; } to { transform:scaleY(1); opacity:1; } }
+  .ftl-shape { transform-box:fill-box; transform-origin:bottom center; animation:ftl-bubble 0.55s cubic-bezier(0.34,1.56,0.64,1) both; }
+</style>
+<div class="ftl">
+  <div class="ftl-chart"><svg id="ftl-svg" style="display:block;overflow:hidden"></svg></div>
+  <div class="ftl-stats" id="ftl-stats"></div>
+  <div class="ftl-legend">
+    <div class="ftl-li"><div class="ftl-sw" style="background:rgba(59,130,246,0.40)"></div><span>Focus Time</span></div>
+    <div class="ftl-li"><div class="ftl-sw" style="background:rgba(239,68,68,0.35)"></div><span>Fragmented Time</span></div>
+    <div class="ftl-li"><div class="ftl-sw" style="background:#10B981"></div><span>Email</span></div>
+    <div class="ftl-li"><div class="ftl-sw" style="background:#F59E0B"></div><span>Chat</span></div>
+    <div class="ftl-li"><div class="ftl-sw" style="background:#EF4444"></div><span>Meetings</span></div>
+  </div>
+</div>`;
+
+  function _draw(element, events, { workStart, workEnd, rampMin, focusThr, hasFocus, focusStart, focusEnd, focusHoursDaily, fragmentedHoursDaily, focusLabel, correctedFocusMin, correctedFragMin }) {
+    const svg = element.querySelector('#ftl-svg');
+    if (!svg) return;
+    const W = Math.max(300, element.clientWidth || 700);
+    const H = Math.max(80,  (element.clientHeight || 250) - 72);
+    svg.setAttribute('width', W);
+    const ML = 36, MR = 36, cW = W - ML - MR, wDur = workEnd - workStart;
+    const grayBuf = Math.min(Math.round(cW * 0.03), ML - 4, MR - 4);
+    const barY = Math.round(H * 0.62), barH = Math.max(18, Math.round(H * 0.15));
+    const maxFH = Math.round(barY * 0.80), svgH = barY + barH + 48;
+    svg.setAttribute('height', svgH);
+    const tx = t => ML + ((t - workStart) / wDur) * cW;
+    const rampPx = (rampMin / wDur) * cW;
+    const COLOR = { focus:'#3B82F6', fragmented:'#3B82F6', meeting:'#EF4444', email:'#10B981', chat:'#F59E0B', bg:'#E8EAED' };
+    const TIP   = { focus:`${focusLabel} – uninterrupted block for deep work`, fragmented:'Fragmented time – too short for deep work', meeting:'Meeting', email:'Email cluster', chat:'Chat message cluster' };
+    const p = [], clipId = 'ftl-bar-clip';
+    const fullBarX = ML - grayBuf, fullBarW = cW + grayBuf * 2;
+    p.push(`<defs><clipPath id="${clipId}"><rect x="${fullBarX}" y="${barY}" width="${fullBarW}" height="${barH}"/></clipPath></defs>`);
+    p.push(`<rect x="${fullBarX}" y="${barY}" width="${fullBarW}" height="${barH}" fill="${COLOR.bg}"/>`);
+    p.push(`<g clip-path="url(#${clipId})">`);
+    buildTimeline(events, workStart, workEnd, focusThr).forEach(seg => {
+      const x = tx(seg.start), w = Math.max(1.5, tx(seg.end) - x), tip = TIP[seg.type] || '';
+      p.push(`<rect x="${f(x)}" y="${barY}" width="${f(w)}" height="${barH}" fill="${COLOR[seg.type] || COLOR.bg}">${tip ? `<title>${tip}</title>` : ''}</rect>`);
+    });
+    p.push('</g>');
+    p.push(`<rect x="${fullBarX}" y="${barY}" width="${fullBarW}" height="${barH}" fill="none" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>`);
+    const focusBlocks = getFocusBlocks(events, workStart, workEnd, focusThr);
+    const fragBlocks  = getFragmentedBlocks(events, workStart, workEnd, focusThr, 1);
+    [...focusBlocks.map(b => ({ ...b, kind:'focus' })), ...fragBlocks.map(b => ({ ...b, kind:'fragmented' }))].sort((a,b) => a.start - b.start).forEach((block, idx) => {
+      const delay = (0.05 + idx * 0.04).toFixed(2);
+      if (block.kind === 'focus') {
+        const x0 = tx(block.start), x3 = tx(block.end), rp = Math.min(rampPx, (x3-x0)*0.25);
+        p.push(`<path d="${plateauPath(x0,x3,barY,barY-maxFH,rp)}" fill="rgba(59,130,246,0.26)" stroke="none" class="ftl-shape" style="animation-delay:${delay}s"><title>${TIP.focus}</title></path>`);
+      } else {
+        const dur = block.end - block.start, pct = Math.min(1, dur / focusThr);
+        const fH = maxFH * (0.20 + 0.80 * Math.pow(pct, 0.6));
+        const x0 = tx(block.start), x3 = tx(block.end);
+        p.push(`<path d="${archPath(x0,x3,barY,barY-fH)}" fill="rgba(239,68,68,0.22)" stroke="none" class="ftl-shape" style="animation-delay:${delay}s"><title>${TIP.fragmented}</title></path>`);
+      }
+    });
+    const h0 = Math.ceil(workStart / 60), hN = Math.floor(workEnd / 60);
+    for (let h = h0; h <= hN; h++) {
+      const x = tx(h * 60), lbl = h === 12 ? '12 pm' : h < 12 ? `${h} am` : `${h-12} pm`;
+      p.push(`<line x1="${f(x)}" y1="${barY}" x2="${f(x)}" y2="${barY+barH+6}" stroke="#9AA0A6" stroke-width="1" stroke-dasharray="3,3"/>`);
+      p.push(`<text x="${f(x)}" y="${barY+barH+18}" text-anchor="middle" font-size="11" fill="#5F6368" font-family="Arial,sans-serif">${lbl}</text>`);
+    }
+    svg.innerHTML = p.join('\n');
+    const statsEl = element.querySelector('#ftl-stats');
+    if (statsEl) {
+      const fmtTime = min => { const h = Math.floor(min/60), m = Math.round(min%60); return h>0 ? `${h}h ${m}m` : `${m}m`; };
+      const interruptions = events.filter(e => e.type==='meeting'||e.type==='email'||e.type==='chat').length;
+      const focusMin = correctedFocusMin !== null ? correctedFocusMin : focusBlocks.reduce((s,b) => s+b.end-b.start, 0);
+      const fragMin  = correctedFragMin  !== null ? correctedFragMin  : fragBlocks.reduce((s,b) => s+b.end-b.start, 0);
+      statsEl.innerHTML = `<b>${interruptions}</b> interruptions · <b>${fmtTime(focusMin)}</b> ${focusLabel.toLowerCase()} · <b>${fmtTime(fragMin)}</b> lost to fragmentation`;
+    }
+  }
+
+  function renderFocusTimeline(container, opts) {
+    const { workStart, workEnd, numMeetings, meetingMinutes, numChat, numEmails, focusHoursDaily, fragmentedHoursDaily, focusThr=120, rampMin=12, focusLabel='Focus Time' } = opts;
+    container.innerHTML = TEMPLATE.replace(/Focus Time/g, focusLabel);
+    const { events, hasFocus, focusStart, focusEnd } = generateSchedule({ meetingMinutes, numMeetings, numChat, numEmails, focusHoursDaily, fragmentedHoursDaily, focusThr, workStart, workEnd });
+    const maxAvailHrs    = Math.max(0, (workEnd - workStart - meetingMinutes) / 60);
+    const focusBlocksRaw = getFocusBlocks(events, workStart, workEnd, focusThr);
+    const actualFocusHrs = focusHoursDaily != null ? focusHoursDaily : Math.min(focusBlocksRaw.reduce((s,b) => s+b.end-b.start,0)/60, maxAvailHrs);
+    const rawFragHrs     = getFragmentedBlocks(events, workStart, workEnd, focusThr, 1).reduce((s,b) => s+b.end-b.start,0)/60;
+    const actualFragHrs  = Math.min(rawFragHrs, Math.max(0, maxAvailHrs - actualFocusHrs));
+    const drawOpts = { workStart, workEnd, rampMin, focusThr, hasFocus, focusStart, focusEnd, focusHoursDaily, fragmentedHoursDaily, focusLabel, correctedFocusMin: Math.round(actualFocusHrs*60), correctedFragMin: Math.round(actualFragHrs*60) };
+    _draw(container, events, drawOpts);
+    return { focusHoursActual: actualFocusHrs, fragHoursActual: actualFragHrs };
+  }
+
+  global.renderFocusTimeline = renderFocusTimeline;
+})(window);
+</script>
+</body>
+</html>
