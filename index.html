@@ -1276,7 +1276,7 @@
       <h4>Want the real picture? Stop guessing.</h4>
       <p>This tool uses self-reported data. Worklytics connects directly to your calendar and meeting tools to give you exact, privacy-safe analytics for every person on your team — no surveys, no assumptions.</p>
       <div class="cta-logos">
-        <div class="cta-logo-wrap" style="background:#fff; border: 1px solid #dadce0;">
+        <div class="cta-logo-wrap" style="background:#fff; border: 1px solid #e8eaed; padding: 4px;">
           <img src="logos/google-calendar.svg" alt="Google Calendar" title="Google Calendar">
         </div>
         <div class="cta-logo-wrap" style="background:#0078d4;">
@@ -2010,6 +2010,11 @@ function generateShareLink() {
   document.getElementById('btn-gen-link').textContent = '✓ Link ready';
   document.getElementById('btn-gen-link').disabled = true;
   document.getElementById('btn-gen-link').style.opacity = '0.65';
+
+  // Show "View team dashboard" for the original creator too
+  const viewBtn = document.getElementById('btn-view-team');
+  viewBtn.textContent = '→ View team dashboard';
+  viewBtn.classList.add('show');
 }
 
 function copyShareLink(fromTeamView = false) {
