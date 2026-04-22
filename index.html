@@ -1042,6 +1042,12 @@
           <input type="email" id="f-email" placeholder="jane@company.com" autocomplete="email">
         </div>
       </div>
+      <div style="margin-top:10px;display:flex;align-items:flex-start;gap:8px">
+        <input type="checkbox" id="f-optin" style="margin-top:2px;flex-shrink:0;accent-color:var(--blue)">
+        <label for="f-optin" style="font-size:12px;color:var(--gray-500);line-height:1.5;cursor:pointer">
+          Keep me updated — I'd like to receive Worklytics research, benchmarks, and product news by email. Unsubscribe anytime.
+        </label>
+      </div>
 
       <hr class="divider">
 
@@ -2107,6 +2113,16 @@ function submitForm() {
     pctRecurring:    +document.getElementById('f-recurring').value,
     hourlyRate:      +document.getElementById('f-rate').value || 150,
   };
+
+  // Fire-and-forget email capture (only if opted in and email provided)
+  const optedIn = document.getElementById('f-optin').checked;
+  if (optedIn && data.email) {
+    fetch('/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: data.name, email: data.email, role: data.role }),
+    }).catch(() => {}); // silently ignore network errors — never block score
+  }
 
   const result = computeScore(data);
   S.formData = data;
