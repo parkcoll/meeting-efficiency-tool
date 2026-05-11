@@ -464,7 +464,7 @@ function drawBellChart(canvas, myHrs, bench) {
   // Flip to efficiency framing: "bottom X%" is more intuitive than "Xth percentile"
   const effPct = Math.max(1, Math.min(99, 100 - pct));
   const label  = effPct <= 50
-    ? `you (worst ${effPct}%)`
+    ? `you (bottom ${effPct}%)`
     : `you (top ${100 - effPct}%)`;
   ctx.fillText(label, goRight ? youX + 9 : youX - 9, dotY - 8);
 }
