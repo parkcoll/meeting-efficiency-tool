@@ -773,6 +773,9 @@ function submitForm() {
       if (nameEl)  nameEl.value  = data.name;
       if (emailEl) emailEl.value = data.email;
       if (roleEl)  roleEl.value  = data.role;
+      // Disable browser native validation so it doesn't block submission
+      // (Webflow's own handler runs after the submit event)
+      wfForm.noValidate = true;
       try { wfForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })); }
       catch(e) {}
     }
