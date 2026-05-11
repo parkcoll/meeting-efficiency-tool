@@ -767,7 +767,9 @@ function submitForm() {
       body: JSON.stringify({ name: data.name, email: data.email, role: data.role }),
     }).catch(() => {});
 
-    // 2. Submit hidden Webflow form (when embedded on Webflow site)
+    // 2. Submit hidden Webflow form via Webflow's own AJAX handler
+    // We call window.Webflow.require('forms') to get their handler rather
+    // than dispatching a submit event (which triggers browser validation).
     const wfForm = document.querySelector('[data-name="Meeting Score Lead"]');
     if (wfForm) {
       const nameEl  = wfForm.querySelector('[name="lead-name"]');
@@ -776,10 +778,10 @@ function submitForm() {
       if (nameEl)  nameEl.value  = data.name;
       if (emailEl) emailEl.value = data.email;
       if (roleEl)  roleEl.value  = data.role;
-      // Disable browser native validation so it doesn't block submission
-      // (Webflow's own handler runs after the submit event)
+      // Disable ALL validation then fire submit — belt and suspenders
       wfForm.noValidate = true;
-      try { wfForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })); }
+      wfForm.querySelectorAll('[required]').forEach(el => el.removeAttribute('required'));
+      try { wfForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true, composed: true })); }
       catch(e) {}
     }
   }
