@@ -1067,4 +1067,3 @@ function submitForm() {
 
   global.renderFocusTimeline = renderFocusTimeline;
 })(window);
-</script>

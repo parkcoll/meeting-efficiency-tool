@@ -49,7 +49,7 @@
     /* ════════════════════════════════════════
        LANDING
     ════════════════════════════════════════ */
-    #s-landing { min-height: 100vh; display: flex; flex-direction: column; }
+    #s-landing { display: flex; flex-direction: column; }
 
     .land-nav {
       display: flex;
@@ -74,7 +74,7 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 48px 24px 56px;
+      padding: 20px 24px 56px;
       background: linear-gradient(180deg, #fff 0%, var(--bg) 100%);
     }
 
