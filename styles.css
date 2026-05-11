@@ -231,11 +231,8 @@
        FORM
     ════════════════════════════════════════ */
     #s-form {
-      min-height: 100vh;
       padding: 28px 16px 48px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      width: 100%;
     }
 
     .form-topbar {
@@ -244,7 +241,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 24px;
+      margin: 0 auto 24px;
     }
     .form-topbar button {
       font-size: 12px;
@@ -281,6 +278,7 @@
       width: 100%;
       max-width: 560px;
       padding: 36px 40px 40px;
+      margin: 0 auto;
     }
 
     /* Progress dots */
