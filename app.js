@@ -454,14 +454,12 @@ function drawBellChart(canvas, myHrs, bench) {
   ctx.fillStyle = clr; ctx.fill();
   ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
 
-  // "you (Xth)" label
-  const spaceRight = (W - mR) - youX;
-  const goRight = spaceRight > 60;
+  // "you (Xth)" label — place left of dot when user is left of median,
+  // right of dot when user is right of median, to avoid overlapping the curve
+  const goRight = youX >= mx;
   ctx.fillStyle = clr;
   ctx.font = 'bold 10px system-ui, sans-serif';
   ctx.textAlign = goRight ? 'left' : 'right';
-  // pct = percentile of meeting hours (high = more meetings = worse efficiency)
-  // Flip to efficiency framing: "bottom X%" is more intuitive than "Xth percentile"
   const effPct = Math.max(1, Math.min(99, 100 - pct));
   const label  = effPct <= 50
     ? `you (bottom ${effPct}%)`
