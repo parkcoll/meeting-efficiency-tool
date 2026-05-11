@@ -770,21 +770,39 @@ function submitForm() {
       body: JSON.stringify({ name: data.name, email: data.email, role: data.role }),
     }).catch(() => {});
 
-    // 2. Submit hidden Webflow form via Webflow's own AJAX handler
-    const wfForm = document.querySelector('[data-name="Meeting Score Lead"]');
-    if (wfForm) {
-      const nameEl  = wfForm.querySelector('[name="lead-name"]');
-      const emailEl = wfForm.querySelector('[name="lead-email"]');
-      const roleEl  = wfForm.querySelector('[name="lead-role"]');
-      if (nameEl)  nameEl.value  = data.name;
-      if (emailEl) emailEl.value = data.email;
-      if (roleEl)  roleEl.value  = data.role;
+    // 2. Submit to Webflow's form API directly (bypasses Webflow's JS handler,
+    //    which fails with 422 when the form was hidden/off-screen at page load).
+    //    Webflow's form API: POST https://webflow.com/api/v1/form/{siteId}
+    //    Metadata comes from data-wf-site / data-wf-page on <html>.
+    (function submitToWebflow() {
+      const htmlEl  = document.documentElement;
+      const siteId  = htmlEl.getAttribute('data-wf-site');
+      const pageId  = htmlEl.getAttribute('data-wf-page');
+      const wfForm  = document.querySelector('[data-name="Meeting Score Lead"]');
+      const elemId  = wfForm
+        ? (wfForm.getAttribute('data-wf-element-id') || wfForm.id || '')
+        : '';
 
-      wfForm.noValidate = true;
-      wfForm.querySelectorAll('[required]').forEach(el => el.removeAttribute('required'));
-      try { wfForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true, composed: true })); }
-      catch(e) { /* silent */ }
-    }
+      if (!siteId) return; // not a Webflow page — skip silently
+
+      fetch('https://webflow.com/api/v1/form/' + siteId, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          name:    'Meeting Score Lead',
+          source:  window.location.href,
+          subject: 'Meeting Score Lead',
+          'g-recaptcha-response': '',
+          data: {
+            'lead-name':  data.name,
+            'lead-email': data.email,
+            'lead-role':  data.role,
+          },
+          pageId:    pageId  || '',
+          elementId: elemId  || '',
+        }),
+      }).catch(() => {});
+    })();
   }
 
   const result = computeScore(data);
