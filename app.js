@@ -45,7 +45,14 @@ const S = {
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
   document.getElementById('s-' + id).classList.add('active');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // When embedded (e.g. Webflow), scroll to the tool container rather than
+  // the page top — otherwise the user gets scrolled above the embed.
+  const host = document.getElementById('wl-meeting-score');
+  if (host) {
+    host.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 }
 
 // ──────────────────────────────────────────────────────────────
