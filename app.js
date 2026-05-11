@@ -518,7 +518,12 @@ function renderResults(data, result) {
   const sigma = iqrSigma(bench.p25, bench.p75);
   const meetingPct = Math.round(normalCDF(meetingHrsWeek, mu, sigma) * 100);
   const animal = getAnimal(meetingPct);
-  document.getElementById('animal-img').src = `animal-icons/${animal.file}`;
+  // Use Railway base URL for animal icons when embedded on another domain
+  const _assetBase = (function() {
+    const host = document.getElementById('wl-meeting-score');
+    return host ? 'https://delightful-transformation-production-bd0f.up.railway.app' : '';
+  })();
+  document.getElementById('animal-img').src = `${_assetBase}/animal-icons/${animal.file}`;
   document.getElementById('animal-img').alt = animal.name;
   document.getElementById('animal-name').textContent = animal.name;
   document.getElementById('animal-desc').textContent = animal.desc;
@@ -592,8 +597,8 @@ function renderResults(data, result) {
         meetingMinutes:       Math.round(meetingsPerDay * data.avgDuration),
         numChat:              12,
         numEmails:            6,
-        focusHoursDaily:      null,   // let library derive from generated schedule
-        fragmentedHoursDaily: null,   // let library derive from generated schedule
+        focusHoursDaily:      focusHrsDay,   // match the stat card value exactly
+        fragmentedHoursDaily: null,
         focusThr:             120,
         rampMin:              12,
         focusLabel,
