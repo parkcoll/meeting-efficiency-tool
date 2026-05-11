@@ -1,5 +1,5 @@
 /* Worklytics Meeting Efficiency Score — loader.js
- * Drop one snippet in your page above the footer:
+ * Embed in your page above the footer:
  *
  *   <div id="wl-meeting-score"></div>
  *   <script src="https://delightful-transformation-production-bd0f.up.railway.app/loader.js"></script>
@@ -10,7 +10,6 @@
 (function () {
   var RAILWAY = 'https://delightful-transformation-production-bd0f.up.railway.app';
 
-  // 1. Inject stylesheet if not already on the page
   if (!document.querySelector('link[href*="styles.css"]')) {
     var lnk = document.createElement('link');
     lnk.rel  = 'stylesheet';
@@ -18,14 +17,12 @@
     document.head.appendChild(lnk);
   }
 
-  // 2. Find host container
   var host = document.getElementById('wl-meeting-score');
   if (!host) {
     console.warn('[Worklytics] No #wl-meeting-score element found on page.');
     return;
   }
 
-  // 3. Inject tool HTML
   host.innerHTML = `<!-- Worklytics logo SVG (reused via JS clone) -->
 <svg id="wl-logo-src" style="display:none" fill="none" viewBox="0 0 1079 307" xmlns="http://www.w3.org/2000/svg">
   <g fill="#3960f0">
@@ -48,10 +45,6 @@
 ════════════════════════════════════════ -->
 <div id="s-landing" class="screen active">
 
-  <nav class="land-nav">
-    <img src="https://delightful-transformation-production-bd0f.up.railway.app/logos/worklytics-logo.svg" class="wl-logo" alt="Worklytics" onclick="showScreen('landing')">
-    <a href="https://worklytics.co" target="_blank" rel="noopener">worklytics.co</a>
-  </nav>
 
   <div class="land-hero">
     <div class="hero-badge">📊 Backed by real benchmark data</div>
@@ -115,7 +108,6 @@
 <div id="s-form" class="screen">
 
   <div class="form-topbar">
-    <img src="https://delightful-transformation-production-bd0f.up.railway.app/logos/worklytics-logo.svg" class="wl-logo" alt="Worklytics" onclick="showScreen('landing')"  style="cursor:pointer;">
     <button onclick="showScreen('landing')">&larr; Back to home</button>
   </div>
 
@@ -268,7 +260,6 @@
 <div id="s-results" class="screen">
 
   <div class="res-topbar">
-    <img src="https://delightful-transformation-production-bd0f.up.railway.app/logos/worklytics-logo.svg" class="wl-logo" alt="Worklytics" onclick="showScreen('landing')" style="cursor:pointer;">
     <button onclick="resetToForm()">&larr; Start over</button>
   </div>
 
@@ -414,7 +405,6 @@
 <div id="s-team" class="screen">
 
   <div class="team-topbar">
-    <img src="https://delightful-transformation-production-bd0f.up.railway.app/logos/worklytics-logo.svg" class="wl-logo" alt="Worklytics" onclick="showScreen('landing')" style="cursor:pointer;">
     <button onclick="showScreen('results')">&larr; My results</button>
   </div>
 
@@ -477,9 +467,8 @@
 <!-- ═══════════════════════════════════════════════════════════
      JAVASCRIPT
 ════════════════════════════════════════════════════════════ -->
-  <script src="https://delightful-transformation-production-bd0f.up.railway.app/app.js"></script>`;
+  <script src="/app.js"></script>`;
 
-  // 4. Load app logic after HTML is in the DOM
   var s = document.createElement('script');
   s.src = RAILWAY + '/app.js';
   document.body.appendChild(s);
