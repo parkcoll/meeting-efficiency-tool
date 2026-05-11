@@ -467,9 +467,24 @@
 <!-- ═══════════════════════════════════════════════════════════
      JAVASCRIPT
 ════════════════════════════════════════════════════════════ -->
-  <script src="/app.js"></script>`;
+`;
+
+  // Shim: if the user taps "Get My Score" before app.js finishes loading,
+  // queue it so the real startTool() fires as soon as the script is ready.
+  var _wlStartQueued = false;
+  if (typeof window.startTool === 'undefined') {
+    window.startTool = function () { _wlStartQueued = true; };
+  }
 
   var s = document.createElement('script');
   s.src = RAILWAY + '/app.js';
+  s.onload = function () {
+    // app.js has now defined the real startTool. If the button was tapped
+    // during loading, fire the real function now.
+    if (_wlStartQueued && typeof window.startTool === 'function') {
+      _wlStartQueued = false;
+      window.startTool();
+    }
+  };
   document.body.appendChild(s);
 })();

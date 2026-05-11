@@ -773,15 +773,9 @@ function submitForm() {
     // 2. Submit hidden Webflow form via Webflow's own AJAX handler
     const wfForm = document.querySelector('[data-name="Meeting Score Lead"]');
     if (wfForm) {
-      // Log actual field names present so mismatches are easy to spot in console
-      const allInputs = wfForm.querySelectorAll('input, textarea, select');
-      console.log('[WL] Webflow form fields found:', Array.from(allInputs).map(el => el.name));
-
-      // Fill by name attribute — must match exactly what's set in Webflow field settings
       const nameEl  = wfForm.querySelector('[name="lead-name"]');
       const emailEl = wfForm.querySelector('[name="lead-email"]');
       const roleEl  = wfForm.querySelector('[name="lead-role"]');
-      console.log('[WL] Fields matched:', { nameEl: !!nameEl, emailEl: !!emailEl, roleEl: !!roleEl });
       if (nameEl)  nameEl.value  = data.name;
       if (emailEl) emailEl.value = data.email;
       if (roleEl)  roleEl.value  = data.role;
@@ -789,9 +783,7 @@ function submitForm() {
       wfForm.noValidate = true;
       wfForm.querySelectorAll('[required]').forEach(el => el.removeAttribute('required'));
       try { wfForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true, composed: true })); }
-      catch(e) { console.error('[WL] Form dispatch error:', e); }
-    } else {
-      console.warn('[WL] Webflow form [data-name="Meeting Score Lead"] not found on page');
+      catch(e) { /* silent */ }
     }
   }
 
