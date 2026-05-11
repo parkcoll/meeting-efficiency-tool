@@ -477,7 +477,7 @@
   }
 
   var s = document.createElement('script');
-  s.src = RAILWAY + '/app.js';
+  s.src = RAILWAY + '/app.js?v=20260511c';
   s.onload = function () {
     // app.js has now defined the real startTool. If the button was tapped
     // during loading, fire the real function now.

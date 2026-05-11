@@ -56,18 +56,21 @@ def index():
 def styles():
     resp = make_response(send_from_directory('.', 'styles.css', mimetype='text/css'))
     resp.headers['Access-Control-Allow-Origin'] = '*'
+    resp.headers['Cache-Control'] = 'no-store'
     return resp
 
 @app.route('/app.js')
 def appjs():
     resp = make_response(send_from_directory('.', 'app.js', mimetype='application/javascript'))
     resp.headers['Access-Control-Allow-Origin'] = '*'
+    resp.headers['Cache-Control'] = 'no-store'
     return resp
 
 @app.route('/loader.js')
 def loaderjs():
     resp = make_response(send_from_directory('.', 'loader.js', mimetype='application/javascript'))
     resp.headers['Access-Control-Allow-Origin'] = '*'
+    resp.headers['Cache-Control'] = 'no-store'
     return resp
 
 @app.route('/animal-icons/<path:filename>')
