@@ -761,28 +761,37 @@ function submitForm() {
   const optedIn = document.getElementById('f-optin').checked;
   if (optedIn && data.email) {
     // 1. Post to Railway backend (standalone hosting)
-    fetch('/api/subscribe', {
+    const _apiBase = document.getElementById('wl-meeting-score')
+      ? 'https://delightful-transformation-production-bd0f.up.railway.app'
+      : '';
+    fetch(_apiBase + '/api/subscribe', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: data.name, email: data.email, role: data.role }),
     }).catch(() => {});
 
     // 2. Submit hidden Webflow form via Webflow's own AJAX handler
-    // We call window.Webflow.require('forms') to get their handler rather
-    // than dispatching a submit event (which triggers browser validation).
     const wfForm = document.querySelector('[data-name="Meeting Score Lead"]');
     if (wfForm) {
+      // Log actual field names present so mismatches are easy to spot in console
+      const allInputs = wfForm.querySelectorAll('input, textarea, select');
+      console.log('[WL] Webflow form fields found:', Array.from(allInputs).map(el => el.name));
+
+      // Fill by name attribute — must match exactly what's set in Webflow field settings
       const nameEl  = wfForm.querySelector('[name="lead-name"]');
       const emailEl = wfForm.querySelector('[name="lead-email"]');
       const roleEl  = wfForm.querySelector('[name="lead-role"]');
+      console.log('[WL] Fields matched:', { nameEl: !!nameEl, emailEl: !!emailEl, roleEl: !!roleEl });
       if (nameEl)  nameEl.value  = data.name;
       if (emailEl) emailEl.value = data.email;
       if (roleEl)  roleEl.value  = data.role;
-      // Disable ALL validation then fire submit — belt and suspenders
+
       wfForm.noValidate = true;
       wfForm.querySelectorAll('[required]').forEach(el => el.removeAttribute('required'));
       try { wfForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true, composed: true })); }
-      catch(e) {}
+      catch(e) { console.error('[WL] Form dispatch error:', e); }
+    } else {
+      console.warn('[WL] Webflow form [data-name="Meeting Score Lead"] not found on page');
     }
   }
 
