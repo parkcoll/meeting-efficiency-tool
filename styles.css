@@ -40,8 +40,11 @@
 
     /* ── Screens ── */
     .screen { display: none !important; }
-    .screen.active { display: block !important; }
-    #s-landing.active { display: flex !important; }
+    .screen.active { display: block !important; width: 100%; }
+    #s-landing.active { display: flex !important; width: 100%; }
+
+    /* ── Embed host ── */
+    #wl-meeting-score { width: 100%; }
 
     /* ── Shared logo ── */
     .wl-logo { height: 22px; width: auto; cursor: pointer; display: block; }
