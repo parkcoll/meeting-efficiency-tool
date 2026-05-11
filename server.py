@@ -2,7 +2,7 @@ import csv
 import os
 import sys
 from datetime import datetime, timezone
-from flask import Flask, send_from_directory, request, jsonify
+from flask import Flask, send_from_directory, request, jsonify, make_response
 
 app = Flask(__name__, static_folder='.')
 
@@ -28,18 +28,28 @@ def append_subscriber(name: str, email: str, role: str):
         print(f"[SUBSCRIBER] CSV write failed: {e}", file=sys.stderr, flush=True)
 
 
-@app.route('/api/subscribe', methods=['POST'])
+@app.route('/api/subscribe', methods=['POST', 'OPTIONS'])
 def subscribe():
+    if request.method == 'OPTIONS':
+        resp = make_response('', 204)
+        resp.headers['Access-Control-Allow-Origin']  = '*'
+        resp.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+        resp.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        return resp
     data = request.get_json(silent=True) or {}
     email = (data.get('email') or '').strip().lower()
     name  = (data.get('name')  or '').strip()
     role  = (data.get('role')  or '').strip()
 
     if not email or '@' not in email:
-        return jsonify({'error': 'invalid email'}), 400
+        resp = make_response(jsonify({'error': 'invalid email'}), 400)
+        resp.headers['Access-Control-Allow-Origin'] = '*'
+        return resp
 
     append_subscriber(name, email, role)
-    return jsonify({'ok': True}), 200
+    resp = make_response(jsonify({'ok': True}), 200)
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
 
 
 @app.route('/')
@@ -48,11 +58,21 @@ def index():
 
 @app.route('/styles.css')
 def styles():
-    return send_from_directory('.', 'styles.css', mimetype='text/css')
+    resp = make_response(send_from_directory('.', 'styles.css', mimetype='text/css'))
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
 
 @app.route('/app.js')
 def appjs():
-    return send_from_directory('.', 'app.js', mimetype='application/javascript')
+    resp = make_response(send_from_directory('.', 'app.js', mimetype='application/javascript'))
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
+
+@app.route('/loader.js')
+def loaderjs():
+    resp = make_response(send_from_directory('.', 'loader.js', mimetype='application/javascript'))
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    return resp
 
 @app.route('/animal-icons/<path:filename>')
 def animal_icons(filename):

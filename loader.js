@@ -1,0 +1,486 @@
+/* Worklytics Meeting Efficiency Score — loader.js
+ * Drop one snippet in your page above the footer:
+ *
+ *   <div id="wl-meeting-score"></div>
+ *   <script src="https://delightful-transformation-production-bd0f.up.railway.app/loader.js"></script>
+ *
+ * Also add a hidden Webflow Form (data-name="Meeting Score Lead")
+ * with inputs named: lead-name, lead-email, lead-role
+ */
+(function () {
+  var RAILWAY = 'https://delightful-transformation-production-bd0f.up.railway.app';
+
+  // 1. Inject stylesheet if not already on the page
+  if (!document.querySelector('link[href*="styles.css"]')) {
+    var lnk = document.createElement('link');
+    lnk.rel  = 'stylesheet';
+    lnk.href = RAILWAY + '/styles.css';
+    document.head.appendChild(lnk);
+  }
+
+  // 2. Find host container
+  var host = document.getElementById('wl-meeting-score');
+  if (!host) {
+    console.warn('[Worklytics] No #wl-meeting-score element found on page.');
+    return;
+  }
+
+  // 3. Inject tool HTML
+  host.innerHTML = `<!-- Worklytics logo SVG (reused via JS clone) -->
+<svg id="wl-logo-src" style="display:none" fill="none" viewBox="0 0 1079 307" xmlns="http://www.w3.org/2000/svg">
+  <g fill="#3960f0">
+    <path d="m242.253 7.29353c3.654-7.894855 1.127-9.04963-3.956-5.05412-9.83 7.72585-17.726 16.83639-24.909 28.51319-26.715 43.4292-40.193 79.6874-59.869 139.1154-.963 2.91-3.725 2.256-4.67 0-8.811-21.054-18.274-54.255-24.38-75.6774-1.834-6.4344-3.365-11.8063-4.485-15.4673-2.138-6.9908-10.467-5.9251-16.205 0-25.8826 26.7267-52.8129 69.3187-69.7368 106.4077-2.7744 6.08-4.8592 3.031-6.421 0-2.9429-5.713-5.4096-11.473-7.6669-16.744-4.4511-10.394-8.0881-18.887-12.95454-21.363-19.66916-10.007 6.73064 72.236 22.55394 97.038 2.7857 4.367 8.5582 4.778 10.7562-.868 15.7261-40.391 33.7457-78.348 55.592-115.129 7.1501-12.039 10.8921-15.225 13.5041-1.371 6.977 37.006 25.708 90.884 41.3 116.215 2.625 4.265 9.653 3.997 11.177-1.522 22.021-79.743 46.778-161.5215 80.37-234.09347z"/>
+    <path d="m542.809 130.064c1.139-1.15.337-3.123-1.27-3.123h-25.282c-.486 0-.951.2-1.29.553l-49.093 51.219v-121.4088c0-1.0093-.806-1.8275-1.801-1.8275h-18.293c-.995 0-1.801.8182-1.801 1.8275v187.2628c0 1.01.806 1.828 1.801 1.828h18.293c.995 0 1.801-.818 1.801-1.828v-60.298l52.974 61.501c.342.397.836.625 1.356.625h26.249c1.564 0 2.384-1.883 1.332-3.057l-55.641-62.096z"/>
+    <path d="m392.242 129.719c3.004-1.849 6.284-3.326 9.853-4.419 3.569-1.092 7.134-1.637 10.702-1.637 3.054 0 5.868.369 8.446 1.108.768.22 1.262.96 1.23 1.769l-.738 18.519c-.093 2.355-2.328 4.001-4.605 3.534-.31-.063-.62-.124-.93-.183-1.782-.336-3.565-.504-5.351-.504-10.699 0-18.891 3.114-24.567 9.342-5.675 6.232-8.513 15.906-8.513 29.046v58.277c0 1.01-.806 1.828-1.8 1.828h-18.29c-.994 0-1.801-.818-1.801-1.828v-116.051c0-1.009.807-1.827 1.801-1.827h18.29c.994 0 1.8.818 1.8 1.827v16.608h.487c1.462-3.198 3.406-6.103 5.841-8.713 2.43-2.61 5.146-4.843 8.145-6.696z"/>
+    <path d="m590.123 55.4767h-18.291c-.994 0-1.8.8182-1.8 1.8275v187.2628c0 1.01.806 1.828 1.8 1.828h18.291c.994 0 1.8-.818 1.8-1.828v-187.2628c0-1.0093-.806-1.8275-1.8-1.8275z"/>
+    <path clip-rule="evenodd" d="m296.546 128.586c7.462 3.279 13.947 7.785 19.461 13.509 5.513 5.723 9.852 12.375 13.014 19.948s4.743 15.742 4.743 24.499c0 8.75-1.581 16.955-4.743 24.616s-7.501 14.313-13.014 19.949c-5.514 5.646-11.999 10.102-19.461 13.391-7.457 3.282-15.484 4.923-24.08 4.923s-16.626-1.644-24.084-4.923c-7.458-3.289-13.947-7.745-19.461-13.391-5.513-5.636-9.852-12.288-13.014-19.949-3.162-7.657-4.743-15.862-4.743-24.616 0-8.753 1.581-16.926 4.743-24.499 3.162-7.576 7.501-14.225 13.014-19.948 5.514-5.724 12.003-10.23 19.461-13.509 7.461-3.286 15.488-4.923 24.084-4.923s16.623 1.637 24.08 4.923zm3.652 87.883c3.245-3.619 5.758-7.997 7.541-13.132 1.782-5.139 2.672-10.735 2.675-16.791 0-6.064-.889-11.663-2.675-16.798-1.783-5.139-4.296-9.514-7.541-13.136-3.245-3.618-7.217-6.48-11.92-8.585-4.706-2.102-9.975-3.154-15.812-3.154-5.838 0-11.11 1.052-15.813 3.154-4.703 2.105-8.675 4.967-11.919 8.585-3.245 3.622-5.755 8.001-7.541 13.136-1.782 5.139-2.676 10.734-2.676 16.798 0 6.056.894 11.655 2.676 16.791 1.783 5.135 4.296 9.51 7.541 13.132 3.244 3.622 7.216 6.483 11.919 8.589 4.703 2.105 9.972 3.154 15.813 3.154 5.837 0 11.109-1.049 15.812-3.154 4.703-2.109 8.679-4.971 11.92-8.589z" fill-rule="evenodd"/>
+    <path d="m905.568 157.88c2.996-3.959 6.727-7.073 11.185-9.346 4.462-2.273 9.687-3.41 15.69-3.41 6.161 0 11.473 1.137 15.931 3.41 4.006 2.041 7.847 4.928 11.525 8.666.701.713 1.835.753 2.56.067l13.937-13.191c.719-.68.769-1.822.09-2.542-5.414-5.736-11.703-10.056-18.864-12.949-7.703-3.117-15.773-4.674-24.207-4.674-9.078 0-17.31 1.557-24.689 4.674-7.375 3.114-13.702 7.449-18.974 13.001-5.269 5.559-9.367 12.207-12.284 19.956-2.92 7.741-4.375 16.246-4.375 25.507 0 9.255 1.455 17.719 4.375 25.376 2.921 7.658 7.058 14.229 12.406 19.7 5.351 5.472 11.718 9.723 19.097 12.752 7.378 3.03 15.528 4.547 24.444 4.547 8.434 0 16.421-1.433 23.958-4.294 7.054-2.676 13.289-6.972 18.709-12.882.641-.699.611-1.783-.047-2.466l-13.033-13.537c-.737-.765-1.958-.725-2.678.057-3.364 3.655-6.98 6.485-10.852 8.495-4.382 2.274-9.654 3.41-15.816 3.41-5.675 0-10.781-1.049-15.322-3.154-4.545-2.105-8.434-5.011-11.675-8.713-3.245-3.706-5.762-8.037-7.541-13.008-1.786-4.963-2.679-10.23-2.679-15.782 0-5.559.774-10.899 2.315-16.034 1.542-5.135 3.81-9.678 6.814-13.636z"/>
+    <path d="m1069.39 187.805c3 2.69 5.35 5.976 7.06 9.846 1.7 3.871 2.55 8.589 2.55 14.141 0 6.736-1.39 12.493-4.14 17.291-2.76 4.799-6.33 8.714-10.71 11.747-4.38 3.027-9.36 5.216-14.96 6.565-5.59 1.345-11.23 2.021-16.9 2.021-9.57 0-17.96-1.517-25.18-4.547-6.38-2.684-12.164-7.341-17.34-13.975-1.164-1.492-.888-3.64.546-4.866l11.444-9.786c1.44-1.233 3.57-1.12 4.95.181 2.93 2.752 6.1 5.248 9.53 7.481 4.38 2.862 9.72 4.295 16.05 4.295 2.76 0 5.56-.292 8.39-.881 2.84-.588 5.36-1.517 7.55-2.778 2.18-1.261 3.97-2.865 5.35-4.799 1.38-1.933 2.06-4.166 2.06-6.692 0-3.366-1.01-6.144-3.04-8.333s-4.46-3.911-7.3-5.175c-2.84-1.265-5.83-2.274-9-3.03-3.16-.76-5.95-1.389-8.39-1.897-4.71-1.177-9.16-2.522-13.38-4.039-4.21-1.517-7.94-3.534-11.19-6.063-3.24-2.522-5.833-5.72-7.781-9.594-1.945-3.871-2.92-8.67-2.92-14.393 0-6.232 1.26-11.656 3.77-16.287 2.517-4.631 5.841-8.457 9.971-11.491 4.14-3.033 8.84-5.307 14.12-6.82 5.26-1.517 10.58-2.27 15.93-2.27 7.78 0 15.24 1.51 22.38 4.544 6.18 2.629 11.27 6.77 15.26 12.432 1.07 1.51.68 3.579-.77 4.716l-11.66 9.165c-1.57 1.23-3.8.93-5.19-.508-2.1-2.189-4.52-4.097-7.25-5.725-3.81-2.274-8.48-3.41-13.99-3.41-5.18 0-9.68 1.136-13.5 3.41-3.81 2.273-5.71 5.599-5.71 9.974 0 3.538 1.09 6.4 3.28 8.589 2.19 2.186 4.78 3.955 7.78 5.303 3 1.345 6.2 2.354 9.61 3.03 3.41.669 6.32 1.261 8.76 1.765 4.7 1.181 9.12 2.614 13.26 4.299 4.13 1.681 7.7 3.87 10.7 6.564z"/>
+    <path d="m671.107 219.89c-.049.142-.181.236-.329.236-.146 0-.277-.092-.328-.23l-33.779-92.018c-.263-.715-.935-1.189-1.687-1.189h-21.375c-1.276 0-2.148 1.31-1.67 2.511l46.658 117.289c.169.425.174.9.014 1.33l-6.802 18.272c-1.134 3.029-2.272 5.727-3.403 8.084-1.134 2.358-2.553 4.419-4.26 6.188-1.703 1.762-3.731 3.11-6.079 4.035-2.355.928-5.232 1.389-8.635 1.389-3.646 0-7.29-.641-10.935-1.925-1.12-.395-2.35.322-2.504 1.515l-2.193 16.972c-.105.81.331 1.597 1.082 1.891 2.691 1.057 5.476 1.765 8.352 2.131 3.324.417 6.605.629 9.849.629 6 0 11.067-.837 15.201-2.522 4.134-1.681 7.666-4.042 10.58-7.072 2.92-3.03 5.434-6.696 7.544-10.987 2.11-4.294 4.134-9.049 6.079-14.269l53.796-142.982c.45-1.196-.42-2.479-1.682-2.479h-19.707c-.763 0-1.443.487-1.697 1.217z"/>
+    <path d="m827.017 72.0147c3.165-3.2857 6.936-4.9231 11.311-4.9231 4.379 0 8.153 1.641 11.315 4.9231 3.162 3.2785 4.742 7.1966 4.742 11.7396 0 4.5467-1.58 8.4612-4.742 11.7433s-6.936 4.9234-11.315 4.9234c-4.375 0-8.146-1.6413-11.311-4.9234-3.162-3.2858-4.743-7.1966-4.743-11.7433 0-4.543 1.581-8.4611 4.743-11.7396z"/>
+    <path d="m784.523 228.208c-4.213 0-7.414-.8-9.604-2.394-2.189-1.601-3.813-3.706-4.868-6.316-1.052-2.613-1.661-5.559-1.826-8.841-.159-3.282-.242-6.608-.242-9.974v-52.466c0-1.01.807-1.828 1.801-1.828h27.783c.994 0 1.8-.818 1.8-1.827v-16.045c0-1.01-.806-1.828-1.8-1.828h-27.783c-.994 0-1.801-.818-1.801-1.827v-29.934c0-1.0093-.806-1.8275-1.8-1.8275h-18.286c-.996 0-1.803.8206-1.801 1.8314l.068 31.7571-.072 19.7v62.379c0 4.879.206 9.722.609 14.521.403 4.798 1.703 9.133 3.893 13.004 2.189 3.874 5.596 7.032 10.216 9.473 4.62 2.442 11.149 3.662 19.583 3.662 2.272 0 5.474-.296 9.611-.884 3.663-.521 6.723-1.407 9.177-2.654.576-.293.917-.903.917-1.557v-16.474c0-1.411-1.526-2.311-2.814-1.78-1.486.612-3.061 1.07-4.727 1.372-2.762.509-5.434.757-8.034.757z"/>
+    <path d="m829.185 126.689h18.293c.995 0 1.801.818 1.801 1.827v116.051c0 1.009-.806 1.827-1.801 1.827h-18.293c-.995 0-1.801-.818-1.801-1.827v-116.051c0-1.009.806-1.827 1.801-1.827z"/>
+  </g>
+</svg>
+
+<!-- ═══════════════════════════════════════
+     SCREEN: LANDING
+════════════════════════════════════════ -->
+<div id="s-landing" class="screen active">
+
+  <nav class="land-nav">
+    <img src="https://delightful-transformation-production-bd0f.up.railway.app/logos/worklytics-logo.svg" class="wl-logo" alt="Worklytics" onclick="showScreen('landing')">
+    <a href="https://worklytics.co" target="_blank" rel="noopener">worklytics.co</a>
+  </nav>
+
+  <div class="land-hero">
+    <div class="hero-badge">📊 Backed by real benchmark data</div>
+    <h1 class="hero-h1">How meeting-efficient<br>is your <em>team</em>?</h1>
+    <p class="hero-sub">Get your personalized Meeting Efficiency Score and see exactly how your habits compare to thousands of professionals — in 2 minutes.</p>
+    <button class="btn-hero" onclick="startTool()">
+      Get My Score &rarr;
+    </button>
+    <p class="hero-note">Free &middot; No signup required &middot; Powered by Worklytics benchmarks</p>
+
+    <div class="stats-section-label">Industry benchmarks · 200K+ professionals</div>
+    <div class="stats-row">
+      <div class="stat-cell">
+        <div class="stat-big">8.4h</div>
+        <div class="stat-lbl">Median meeting<br>hours per week</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-big">$19K</div>
+        <div class="stat-lbl">Est. annual cost<br>per person</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-big">13</div>
+        <div class="stat-lbl">Median meetings<br>attended per week</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-big">53%</div>
+        <div class="stat-lbl">Of meeting time<br>that's recurring</div>
+      </div>
+    </div>
+
+    <div class="how-section">
+      <div class="how-eyebrow">How it works</div>
+      <div class="how-steps">
+        <div class="how-step">
+          <div class="how-icon">📝</div>
+          <h3>Answer a few questions</h3>
+          <p>Tell us about your role and typical meeting habits. Takes under 2 minutes.</p>
+        </div>
+        <div class="how-step">
+          <div class="how-icon">📈</div>
+          <h3>Get your score</h3>
+          <p>See your 0–100 Meeting Efficiency Score with a full breakdown and benchmarks.</p>
+        </div>
+        <div class="how-step">
+          <div class="how-icon">👥</div>
+          <h3>Compare your team</h3>
+          <p>Share a link with teammates and see a team-level dashboard together.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="land-footer">
+    Based on the Worklytics Metric Benchmarks Report v2025.2 · Jan–Dec 2024 · 200,000+ professionals across 8 industries
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN: FORM
+════════════════════════════════════════ -->
+<div id="s-form" class="screen">
+
+  <div class="form-topbar">
+    <img src="https://delightful-transformation-production-bd0f.up.railway.app/logos/worklytics-logo.svg" class="wl-logo" alt="Worklytics" onclick="showScreen('landing')"  style="cursor:pointer;">
+    <button onclick="showScreen('landing')">&larr; Back to home</button>
+  </div>
+
+  <div class="card">
+
+    <!-- Team join banner -->
+    <div class="team-banner" id="team-banner">
+      <span class="tb-icon">👥</span>
+      <span>Your teammates are waiting — <strong id="tb-count">–</strong> have already submitted. Add yours to unlock the team dashboard.</span>
+    </div>
+
+    <!-- Progress -->
+    <div class="prog-wrap">
+      <div class="prog-track">
+        <div class="prog-dot active" id="pd1"></div>
+        <div class="prog-line" id="pl1"></div>
+        <div class="prog-dot" id="pd2"></div>
+        <div class="prog-line" id="pl2"></div>
+        <div class="prog-dot" id="pd3"></div>
+      </div>
+      <div class="prog-meta" id="prog-meta">Step 1 of 2 · About you</div>
+    </div>
+
+    <!-- ── STEP 1 ── -->
+    <div id="step-1">
+      <h2 style="font-size:21px;font-weight:800;margin-bottom:4px">How's your calendar?</h2>
+      <p style="font-size:14px;color:var(--gray-500);margin-bottom:20px;line-height:1.55">Answer quickly — we'll compare you to benchmark data from 200K+ professionals.</p>
+
+      <div class="sec-label">About you</div>
+      <div class="field-row">
+        <div class="field">
+          <label for="f-name">First name</label>
+          <input type="text" id="f-name" placeholder="Jane" autocomplete="given-name">
+        </div>
+        <div class="field">
+          <label for="f-email">Work email <span style="font-weight:400;color:var(--gray-400)">(optional)</span></label>
+          <input type="email" id="f-email" placeholder="jane@company.com" autocomplete="email">
+        </div>
+      </div>
+      <div style="margin-top:10px;display:flex;align-items:flex-start;gap:8px">
+        <input type="checkbox" id="f-optin" style="margin-top:2px;flex-shrink:0;accent-color:var(--blue)">
+        <label for="f-optin" style="font-size:12px;color:var(--gray-500);line-height:1.5;cursor:pointer">
+          Keep me updated — I'd like to receive Worklytics research, benchmarks, and product news by email. Unsubscribe anytime.
+        </label>
+      </div>
+
+      <hr class="divider">
+
+      <div class="sec-label">Your role</div>
+      <div class="field">
+        <div class="pill-group">
+          <input type="radio" name="role" id="r-ic" value="ic" checked>
+          <label for="r-ic">Individual Contributor</label>
+          <input type="radio" name="role" id="r-mgr" value="manager">
+          <label for="r-mgr">Manager</label>
+          <input type="radio" name="role" id="r-sl" value="senior_leader">
+          <label for="r-sl">Senior Leader</label>
+        </div>
+      </div>
+
+      <div class="sec-label">Organization size</div>
+      <div class="field">
+        <div class="pill-group">
+          <input type="radio" name="orgSize" id="os-s" value="small" checked>
+          <label for="os-s">Under 10,000 employees</label>
+          <input type="radio" name="orgSize" id="os-l" value="large">
+          <label for="os-l">10,000+ employees</label>
+        </div>
+      </div>
+
+      <button class="btn btn-blue" onclick="goStep2()">Next: Meeting Habits &rarr;</button>
+    </div>
+
+    <!-- ── STEP 2 ── -->
+    <div id="step-2" style="display:none">
+      <h2 style="font-size:21px;font-weight:800;margin-bottom:4px">Your meeting habits</h2>
+      <p style="font-size:14px;color:var(--gray-500);margin-bottom:20px;line-height:1.55">Think about a typical week — not your best or worst.</p>
+
+      <div class="sec-label">Volume</div>
+
+      <div class="field">
+        <label>Meetings per week</label>
+        <div class="slider-wrap">
+          <input type="range" id="f-meetings" min="0" max="40" step="1" value="10"
+            oninput="sv('v-mtg', this.value)">
+          <div class="slider-val" id="v-mtg">10</div>
+        </div>
+        <div class="field-hint">0 = almost none &nbsp;&middot;&nbsp; 40 = back-to-back every day</div>
+      </div>
+
+      <div class="field">
+        <label for="f-duration">Average meeting duration</label>
+        <select id="f-duration">
+          <option value="15">15 minutes</option>
+          <option value="30">30 minutes</option>
+          <option value="45">45 minutes</option>
+          <option value="60" selected>60 minutes (1 hour)</option>
+          <option value="75">75 minutes</option>
+          <option value="90">90 minutes</option>
+        </select>
+      </div>
+
+      <hr class="divider">
+
+      <div class="sec-label">Quality signals</div>
+
+      <div class="field">
+        <label>Average attendees per meeting</label>
+        <div class="slider-wrap">
+          <input type="range" id="f-attendees" min="1" max="25" step="1" value="6"
+            oninput="sv('v-att', this.value)">
+          <div class="slider-val" id="v-att">6</div>
+        </div>
+        <div class="field-hint">1:1s count as 2 &nbsp;&middot;&nbsp; All-hands = 20+</div>
+      </div>
+
+      <div class="field">
+        <label>% of meetings that are recurring</label>
+        <div class="slider-wrap">
+          <input type="range" id="f-recurring" min="0" max="100" step="5" value="50"
+            oninput="sv('v-rec', this.value + '%')">
+          <div class="slider-val" id="v-rec">50%</div>
+        </div>
+        <div class="field-hint">Standups, weeklies, biweeklies, etc.</div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="sec-label">Cost assumption</div>
+
+      <div class="field">
+        <label for="f-rate">Hourly rate per person in your meetings</label>
+        <div class="cost-wrap">
+          <span class="cost-pfx">$</span>
+          <input type="number" id="f-rate" value="150" min="25" max="2000" step="25" onwheel="this.blur()">
+        </div>
+        <div class="field-hint">Default $150/hr — adjust for your industry &amp; seniority</div>
+      </div>
+
+      <button class="btn btn-blue" onclick="submitForm()">Calculate My Score &rarr;</button>
+      <button class="btn btn-ghost" onclick="goStep1()">&larr; Back</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN: RESULTS
+════════════════════════════════════════ -->
+<div id="s-results" class="screen">
+
+  <div class="res-topbar">
+    <img src="https://delightful-transformation-production-bd0f.up.railway.app/logos/worklytics-logo.svg" class="wl-logo" alt="Worklytics" onclick="showScreen('landing')" style="cursor:pointer;">
+    <button onclick="resetToForm()">&larr; Start over</button>
+  </div>
+
+  <!-- Score hero -->
+  <div class="score-hero fade-up">
+    <div class="gauge-wrap">
+      <svg class="gauge-svg" viewBox="0 0 180 180">
+        <!-- Track arc: 270° centered, r=70, offset 135° -->
+        <circle cx="90" cy="90" r="70" fill="none"
+          stroke="#f1f5f9" stroke-width="14"
+          stroke-dasharray="329.87" stroke-dashoffset="0"
+          stroke-linecap="round"
+          transform="rotate(135 90 90)"/>
+        <!-- Score arc -->
+        <circle cx="90" cy="90" r="70" fill="none"
+          stroke="#10b981" stroke-width="14"
+          stroke-dasharray="329.87" stroke-dashoffset="329.87"
+          stroke-linecap="round"
+          transform="rotate(135 90 90)"
+          id="gauge-arc"
+          style="transition:stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1),stroke 0.4s"/>
+      </svg>
+      <div class="gauge-center">
+        <div class="gauge-num" id="r-score-num">--</div>
+        <div class="gauge-sub">/ 100</div>
+      </div>
+    </div>
+
+    <div class="score-right">
+      <div class="score-grade" id="r-grade"></div>
+      <div class="score-headline" id="r-headline"></div>
+      <div class="score-summary" id="r-summary"></div>
+    </div>
+  </div>
+
+  <!-- Key metrics -->
+  <div class="metrics-strip">
+    <div class="m-cell">
+      <div class="m-val" id="r-hrs-wk">--h</div>
+      <div class="m-lbl">Meeting hrs<br>/week</div>
+    </div>
+    <div class="m-cell">
+      <div class="m-val" id="r-pct-day">--%</div>
+      <div class="m-lbl">% of workday<br>in meetings</div>
+    </div>
+    <div class="m-cell">
+      <div class="m-val" id="r-focus">--h</div>
+      <div class="m-lbl">Avg focus<br>block/day</div>
+    </div>
+    <div class="m-cell">
+      <div class="m-val blue" id="r-cost">$--</div>
+      <div class="m-lbl">Your annual<br>meeting cost</div>
+    </div>
+  </div>
+
+  <!-- Animal archetype -->
+  <div class="animal-card" id="animal-card">
+    <img class="animal-img" id="animal-img" src="" alt="">
+    <div class="animal-body">
+      <div class="animal-eyebrow">Your meeting archetype</div>
+      <div class="animal-name" id="animal-name">--</div>
+      <div class="animal-desc" id="animal-desc">--</div>
+    </div>
+  </div>
+
+  <!-- Chart + Breakdown -->
+  <div class="two-col">
+
+    <div class="r-card">
+      <div class="r-card-title" id="r-chart-title">vs. Worklytics Benchmark</div>
+      <canvas id="bench-canvas" height="148"></canvas>
+      <div class="chart-footer">
+        <span>Benchmark median: <strong id="r-bm-med">--</strong></span>
+        <span>You: <strong id="r-bm-you">--</strong></span>
+      </div>
+    </div>
+
+    <div class="r-card">
+      <div class="r-card-title">Score breakdown</div>
+      <div id="dims-list"></div>
+    </div>
+
+  </div>
+
+  <!-- Typical day timeline -->
+  <div class="r-card timeline-card">
+    <div class="r-card-title">Simulation of a typical day based on your profile</div>
+    <div id="timeline-container" style="height:230px"></div>
+  </div>
+
+  <!-- Insights -->
+  <div class="insights-card">
+    <div class="r-card-title" style="margin-bottom:0">Insights for <span id="r-name-inline">you</span></div>
+    <div id="insights-list"></div>
+  </div>
+
+  <!-- Team invite -->
+  <div class="invite-card">
+    <div class="invite-top">
+      <div>
+        <h3>Get your team's combined score</h3>
+        <p>Share one link — each teammate gets their own score, and together you unlock a <strong>team-level dashboard</strong> showing your collective meeting efficiency. No accounts or installs needed.</p>
+      </div>
+      <button class="btn-share" id="btn-gen-link" onclick="generateShareLink()">Generate team link →</button>
+    </div>
+    <div class="share-box" id="share-box">
+      <input class="share-input" id="share-link-input" readonly placeholder="Generating link…">
+      <button class="btn-copy" onclick="copyShareLink()">Copy</button>
+    </div>
+    <button class="btn-view-team" id="btn-view-team" onclick="goToTeamDashboard()">
+      → View Team Dashboard
+    </button>
+  </div>
+
+  <!-- Worklytics CTA -->
+  <div class="cta-card">
+    <div class="cta-left">
+      <h4>Want the real picture? Stop guessing.</h4>
+      <p>This tool uses self-reported data. Worklytics connects directly to your calendar and meeting tools to give you exact, privacy-safe analytics for every person on your team — no surveys, no assumptions.</p>
+      <div class="cta-logos">
+        <div class="cta-logo-wrap" style="background:#fff; border: 1px solid #e8eaed; padding: 4px;">
+          <img src="https://delightful-transformation-production-bd0f.up.railway.app/logos/google-calendar.svg" alt="Google Calendar" title="Google Calendar">
+        </div>
+        <div class="cta-logo-wrap" style="background:#0078d4;">
+          <img src="https://delightful-transformation-production-bd0f.up.railway.app/logos/outlook.svg" alt="Outlook" title="Microsoft Outlook" style="filter:brightness(0) invert(1)">
+        </div>
+        <div class="cta-logo-wrap" style="background:#5059c9;">
+          <img src="https://delightful-transformation-production-bd0f.up.railway.app/logos/teams.svg" alt="Microsoft Teams" title="Microsoft Teams" style="filter:brightness(0) invert(1)">
+        </div>
+        <div class="cta-logo-wrap" style="background:#2D8CFF;">
+          <img src="https://delightful-transformation-production-bd0f.up.railway.app/logos/zoom.svg" alt="Zoom" title="Zoom" style="filter:brightness(0) invert(1)">
+        </div>
+      </div>
+    </div>
+    <a href="https://worklytics.co" target="_blank" rel="noopener" class="btn-cta">Learn More &rarr;</a>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN: TEAM DASHBOARD
+════════════════════════════════════════ -->
+<div id="s-team" class="screen">
+
+  <div class="team-topbar">
+    <img src="https://delightful-transformation-production-bd0f.up.railway.app/logos/worklytics-logo.svg" class="wl-logo" alt="Worklytics" onclick="showScreen('landing')" style="cursor:pointer;">
+    <button onclick="showScreen('results')">&larr; My results</button>
+  </div>
+
+  <!-- Team avg -->
+  <div class="team-hero fade-up">
+    <div class="team-hero-eyebrow">Team Average Score</div>
+    <div class="team-avg-num" id="t-avg-num">--</div>
+    <div class="team-avg-sub" id="t-avg-sub">across -- members</div>
+  </div>
+
+  <!-- Team metrics -->
+  <div class="metrics-strip">
+    <div class="m-cell">
+      <div class="m-val" id="t-avg-hrs">--h</div>
+      <div class="m-lbl">Avg hrs/week<br>in meetings</div>
+    </div>
+    <div class="m-cell">
+      <div class="m-val blue" id="t-total-cost">$--</div>
+      <div class="m-lbl">Combined annual<br>meeting cost</div>
+    </div>
+    <div class="m-cell">
+      <div class="m-val good" id="t-avg-focus">--h</div>
+      <div class="m-lbl">Avg focus<br>time/day</div>
+    </div>
+  </div>
+
+  <!-- Members -->
+  <div class="r-card" style="margin-bottom:16px">
+    <div class="r-card-title" id="t-members-title">Team members</div>
+    <div id="t-members-list"></div>
+  </div>
+
+  <!-- Share link in team view -->
+  <div class="invite-card" style="margin-bottom:16px">
+    <div class="invite-top">
+      <div>
+        <h3>Add more teammates</h3>
+        <p>Share this link to add more people to the dashboard. The link already includes everyone who's submitted.</p>
+      </div>
+      <button class="btn-share" onclick="copyShareLink()">Copy link</button>
+    </div>
+    <div class="share-box show" id="t-share-box">
+      <input class="share-input" id="t-share-input" readonly>
+      <button class="btn-copy" onclick="copyShareLink(true)">Copy</button>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-card">
+    <div class="cta-left">
+      <h4>Ready for the real picture?</h4>
+      <p>Worklytics gives you exact meeting analytics for every person on your team — no surveys, no guessing, no assumptions. Connect your calendar in minutes.</p>
+    </div>
+    <a href="https://worklytics.co" target="_blank" rel="noopener" class="btn-cta">Get Started &rarr;</a>
+  </div>
+
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════════════════════ -->
+  <script src="https://delightful-transformation-production-bd0f.up.railway.app/app.js"></script>`;
+
+  // 4. Load app logic after HTML is in the DOM
+  var s = document.createElement('script');
+  s.src = RAILWAY + '/app.js';
+  document.body.appendChild(s);
+})();
