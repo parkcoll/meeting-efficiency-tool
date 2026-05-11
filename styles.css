@@ -31,12 +31,15 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background: var(--bg);
       color: var(--gray-900);
-      min-height: 100vh;
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
     }
+
+    /* On the standalone Railway page, give the body its background.
+       When embedded in Webflow this class is absent, so Webflow's body
+       background is left untouched. */
+    body.wl-standalone { background: var(--bg); min-height: 100vh; }
 
     /* ── Screens ── */
     .screen { display: none !important; }
