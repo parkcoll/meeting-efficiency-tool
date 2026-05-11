@@ -46,6 +46,14 @@ def subscribe():
 def index():
     return send_from_directory('.', 'index.html')
 
+@app.route('/styles.css')
+def styles():
+    return send_from_directory('.', 'styles.css', mimetype='text/css')
+
+@app.route('/app.js')
+def appjs():
+    return send_from_directory('.', 'app.js', mimetype='application/javascript')
+
 @app.route('/animal-icons/<path:filename>')
 def animal_icons(filename):
     return send_from_directory('animal-icons', filename)
