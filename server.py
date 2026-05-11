@@ -3,29 +3,54 @@ import os
 import sys
 from datetime import datetime, timezone
 from flask import Flask, send_from_directory, request, jsonify, make_response
+import resend
 
 app = Flask(__name__, static_folder='.')
 
 SUBSCRIBERS_FILE = os.path.join(os.path.dirname(__file__), 'subscribers.csv')
+NOTIFY_TO        = os.environ.get('NOTIFY_EMAIL', 'philip@worklytics.co')
+RESEND_API_KEY   = os.environ.get('RESEND_API_KEY', '')
+
+def send_notification(name: str, email: str, role: str, ts: str):
+    """Send an email notification via Resend (no-op if API key not set)."""
+    if not RESEND_API_KEY:
+        return
+    try:
+        resend.api_key = RESEND_API_KEY
+        resend.Emails.send({
+            'from':    'Meeting Score Tool <onboarding@resend.dev>',
+            'to':      [NOTIFY_TO],
+            'subject': f'New opt-in: {name} ({email})',
+            'html':    f'''
+                <p>A new visitor opted in to Worklytics marketing emails via the Meeting Efficiency Score tool.</p>
+                <table>
+                  <tr><td><b>Name</b></td><td>{name}</td></tr>
+                  <tr><td><b>Email</b></td><td>{email}</td></tr>
+                  <tr><td><b>Role</b></td><td>{role}</td></tr>
+                  <tr><td><b>Time</b></td><td>{ts}</td></tr>
+                </table>
+            ''',
+        })
+    except Exception as e:
+        print(f"[SUBSCRIBER] Email notification failed: {e}", file=sys.stderr, flush=True)
 
 def append_subscriber(name: str, email: str, role: str):
-    """Append a subscriber to the CSV and log to stdout (Railway captures logs)."""
+    """Log subscriber, write to CSV, and send email notification."""
     ts = datetime.now(timezone.utc).isoformat()
-    row = [ts, email, name, role]
 
-    # Always log to stdout — Railway retains these even across redeploys
     print(f"[SUBSCRIBER] {ts} | {email} | {name} | {role}", flush=True)
 
-    # Also write to CSV (note: ephemeral on Railway unless a volume is mounted)
     file_exists = os.path.isfile(SUBSCRIBERS_FILE)
     try:
         with open(SUBSCRIBERS_FILE, 'a', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
             if not file_exists:
                 writer.writerow(['timestamp', 'email', 'name', 'role'])
-            writer.writerow(row)
+            writer.writerow([ts, email, name, role])
     except Exception as e:
         print(f"[SUBSCRIBER] CSV write failed: {e}", file=sys.stderr, flush=True)
+
+    send_notification(name, email, role, ts)
 
 
 @app.route('/api/subscribe', methods=['POST', 'OPTIONS'])
